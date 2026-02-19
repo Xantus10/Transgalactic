@@ -1,68 +1,35 @@
 from re import match
 from shlex import shlex
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, get_args
 
 from .errors import IdentifierError, SyntaxError
+from .modules.savestate import REGISTER_LIST
 
 type RawArgument = str
 
+
+type ArgType_str = Literal['string', 'register', 'label']
 class TypedArgument_str(TypedDict):
-  argtype: Literal['string', 'register', 'label']
+  argtype: ArgType_str
   value: str
 
+type ArgType_int = Literal['int']
 class TypedArgument_int(TypedDict):
-  argtype: Literal['int']
+  argtype: ArgType_int
   value: int
 
+
+type ArgTypes = ArgType_str | ArgType_int
 type TypedArgument = TypedArgument_str | TypedArgument_int
 
 type Namespaces = Literal['mc', 'std']
-DEFINED_NAMESPACES = ('mc', 'std')
+DEFINED_NAMESPACES: tuple[Namespaces] = get_args(Namespaces.__value__)
+
 
 class TGLLine(TypedDict):
   namespace: Namespaces
   func: str
   args: list[TypedArgument]
-
-
-REGISTER_LIST = [
-    # RAX family
-    "rax", "eax", "ax", "al", "ah",
-    
-    # RBX family
-    "rbx", "ebx", "bx", "bl", "bh",
-    
-    # RCX family
-    "rcx", "ecx", "cx", "cl", "ch",
-    
-    # RDX family
-    "rdx", "edx", "dx", "dl", "dh",
-    
-    # RSI family
-    "rsi", "esi", "si", "sil",
-    
-    # RDI family
-    "rdi", "edi", "di", "dil",
-    
-    # RBP family
-    "rbp", "ebp", "bp", "bpl",
-    
-    # RSP family
-    "rsp", "esp", "sp", "spl",
-    
-    # R8–R15 families
-    "r8",  "r8d",  "r8w",  "r8b",
-    "r9",  "r9d",  "r9w",  "r9b",
-    "r10", "r10d", "r10w", "r10b",
-    "r11", "r11d", "r11w", "r11b",
-    "r12", "r12d", "r12w", "r12b",
-    "r13", "r13d", "r13w", "r13b",
-    "r14", "r14d", "r14w", "r14b",
-    "r15", "r15d", "r15w", "r15b",
-    
-    # Instruction pointer
-    "rip", "eip", "ip"
-]
 
 
 def argparse(s: str) -> list[RawArgument]:
@@ -116,7 +83,7 @@ def typeargs(args: list[RawArgument]) -> list[TypedArgument]:
   res: list[TypedArgument] = []
   for arg in args:
     if arg[0] in ['"', "'"]:
-      res.append({'argtype': 'string', 'value': strparse(arg)})
+      res.append({'argtype': 'string', 'value': arg})
     elif match(r'^[\+\-]?\d+$', arg):
       res.append({'argtype': 'int', 'value': int(arg)})
     elif match(r'0x[A-Fa-f0-9]+', arg):
@@ -136,4 +103,8 @@ def parseline(line: str) -> TGLLine | None:
   return {'namespace': spl[1], 'func': spl[2], 'args': typeargs(
     argparse(' '.join(spl[3:]))
   )}
-  
+
+def checkArgTypes(args: list[TypedArgument], check: list[ArgTypes]) -> bool:
+  for i in range(len(args)):
+    if args[i]['argtype'] != check[i]: return False
+  return True

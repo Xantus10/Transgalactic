@@ -1,9 +1,9 @@
-from typing import Literal, Self
+from typing import Literal, Self, get_args
 
 from .errors import IdentifierError
 
 type Sections = Literal['.data', '.bss', '.rodata', '.text']
-DEFINED_SECTIONS = ('.data', '.bss', '.rodata', '.text')
+DEFINED_SECTIONS: tuple[Sections] = get_args(Sections.__value__)
 
 class Code:
   def __init__(self, code: str):
