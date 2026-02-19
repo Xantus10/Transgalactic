@@ -1,6 +1,6 @@
 from typing import Literal, Self, get_args
 
-from .errors import IdentifierError
+from .errors import TGLIdentifierError
 
 type Sections = Literal['.data', '.bss', '.rodata', '.text']
 DEFINED_SECTIONS: tuple[Sections] = get_args(Sections.__value__)
@@ -36,7 +36,7 @@ class Code:
     self.incrementSectionIx(ix, data.count('\n')+1)
   
   def createSection(self, section: Sections):
-    if not section in DEFINED_SECTIONS: raise IdentifierError(f'Section \'{section}\' is not recognized as a TGL working section and is not supported', '')
+    if not section in DEFINED_SECTIONS: raise TGLIdentifierError(f'Section \'{section}\' is not recognized as a TGL working section and is not supported', '')
     nextSectionIx = DEFINED_SECTIONS.index(section) + 1
     placeIndex = len(self.code)
     while nextSectionIx < len(DEFINED_SECTIONS):

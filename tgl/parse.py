@@ -2,7 +2,7 @@ from re import match
 from shlex import shlex
 from typing import Literal, TypedDict, get_args
 
-from .errors import IdentifierError, SyntaxError
+from .errors import TGLIdentifierError, TGLSyntaxError
 from .modules.savestate import REGISTER_LIST
 
 type RawArgument = str
@@ -98,8 +98,8 @@ def parseline(line: str) -> TGLLine | None:
   spl = line.split()
   if len(spl) < 1: return None
   if spl[0] != '!': return None
-  if len(spl) < 3: raise SyntaxError('Too few words', line)
-  if not spl[1] in DEFINED_NAMESPACES: raise IdentifierError(f'\'{spl[1]}\' is not a valid namespace', line)
+  if len(spl) < 3: raise TGLSyntaxError('Too few words', line)
+  if not spl[1] in DEFINED_NAMESPACES: raise TGLIdentifierError(f'\'{spl[1]}\' is not a valid namespace', line)
   return {'namespace': spl[1], 'func': spl[2], 'args': typeargs(
     argparse(' '.join(spl[3:]))
   )}
