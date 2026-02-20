@@ -1,8 +1,8 @@
 from typing import Callable, cast, TypedDict
 
-from ..code import Sections
 from ..errors import TGLArgumentError
-from ..parse import checkArgTypes, strparse, TypedArgument
+from ..parse import checkArgTypes, strparse
+from ..types import Sections, TypedArgument
 
 class Instruction(TypedDict):
   section: Sections | None

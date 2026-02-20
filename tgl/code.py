@@ -1,9 +1,7 @@
-from typing import Literal, Self, get_args
+from typing import Self
 
 from .errors import TGLIdentifierError
-
-type Sections = Literal['.data', '.bss', '.rodata', '.text']
-DEFINED_SECTIONS: tuple[Sections] = get_args(Sections.__value__)
+from .types import Sections, DEFINED_SECTIONS
 
 class Code:
   def __init__(self, code: str):
