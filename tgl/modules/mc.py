@@ -40,63 +40,46 @@ def resstr(args: list[TypedArgument]) -> InstructionList:
 
 ### .text section macros
 
+def printdef_defined(args: list[TypedArgument]) -> InstructionList:
+  wrap = saveSyscallArgs()
+  return [
+    {
+      'section': None,
+      'content': [
+        *wrap['before'],
+        'mov rax 1',
+        'mov rdi 1',
+        f'lea rsi [rel {args[0]["value"]}]',
+        f'mov rdx {args[0]["value"]}_len',
+        *wrap['after']
+      ]
+    }
+  ]
+
+def printdef_defname(args: list[TypedArgument]) -> InstructionList:
+  if not checkArgTypes(args, ['label', 'string']): raise TGLArgumentError(f'Invalid argument types for \'printdef\' (expected: (label, string), got: {args})', str(args))
+  return [
+    {
+      'section': '.rodata',
+      'content': [f'! mc defstr {args[0]["value"]},{args[1]["value"]}']
+    },
+    *printdef_defined([args[0]])
+  ]
+
+def printdef_rand(args: list[TypedArgument]) -> InstructionList:
+  strid = Global.getRandId()
+  return printdef_defname([{'argtype': 'label', 'value': strid}, args[0]])
+
 def printdef(args: list[TypedArgument]) -> InstructionList:
   al = len(args)
-  wrap = saveSyscallArgs()
   if al == 1:
     if args[0]['argtype'] == 'string':
-      strid = Global.getRandId()
-      return [
-        {
-          'section': '.rodata',
-          'content': [f'! mc defstr {strid},{args[0]["value"]}']
-        },
-        {
-          'section': None,
-          'content': [
-            *wrap['before'],
-            'mov rax 1',
-            'mov rdi 1',
-            f'lea rsi [rel {strid}]',
-            f'mov rdx {strid}_len',
-            *wrap['after']
-          ]
-        }
-      ]
+      return printdef_rand(args)
     elif args[0]['argtype'] == 'label':
-      return [
-        {
-          'section': None,
-          'content': [
-            *wrap['before'],
-            'mov rax 1',
-            'mov rdi 1',
-            f'lea rsi [rel {args[0]["value"]}]',
-            f'mov rdx {args[0]["value"]}_len',
-            *wrap['after']
-          ]
-        }
-      ]
+      return printdef_defined(args)
     raise TGLArgumentError(f'Invalid argument types for \'printdef\' (expected: (label OR string), got: {args[0]})', str(args))
   elif al == 2:
-    if not checkArgTypes(args, ['label', 'string']): raise TGLArgumentError(f'Invalid argument types for \'printdef\' (expected: (label, string), got: {args})', str(args))
-    return [
-      {
-        'section': '.rodata',
-        'content': [f'! mc defstr {args[0]["value"]},{args[1]["value"]}']
-      },
-      {
-        'section': None,
-        'content': [
-          *wrap['before'],
-          'mov rax 1',
-          'mov rdi 1',
-          f'lea rsi [rel {args[0]["value"]}]',
-          f'mov rdx {args[0]["value"]}_len',
-          *wrap['after']
-        ]
-      }
-    ]
+    return printdef_defname(args)
   raise TGLArgumentError(f'Invalid argument count for \'printdef\' (expected: 1 or 2, got: {al})', str(args))
 
 
