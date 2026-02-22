@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>mc - Transgalactic</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "mc";
+        var mkdocs_page_input_path = "modules\\mc.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../index.html" class="icon icon-home"> Transgalactic
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../basics.html">Basics</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Modules</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">mc</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#data-section">.data section</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#defstr">defstr</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#bss-section">.bss section</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#resstr">resstr</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#text-section">.text section</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#printdef">printdef</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#just-print-string">Just print string</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#print-and-define">Print and define</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#print-already-defined">Print already defined</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Transgalactic</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html" class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Modules</li>
+      <li class="breadcrumb-item active">mc</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Xantus10/Transgalactic/edit/master/doc/docs/modules/mc.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="mc-macros"><code>mc</code> - Macros</h1>
+<p>The <code>mc</code> module functions are the simplest you can find in TGL. They are basically just a fancy way of doing find + replace.</p>
+<p>Here is the documentation for them</p>
+<h2 id="data-section">.data section</h2>
+<h2 id="defstr"><code>defstr</code></h2>
+<pre><code>defstr NAME, STR_VALUE
+
+label NAME - the name to define
+string STR_VALUE - a string value to define
+</code></pre>
+<p>This macro deines the given string under the given label and should be used in <code>.data</code> and <code>.rodata</code> sections. It also defines an assembler constant in the format <code>NAME_len</code>, which holds the string length.</p>
+<h2 id="bss-section">.bss section</h2>
+<h2 id="resstr"><code>resstr</code></h2>
+<pre><code>resstr NAME, SIZE
+
+label NAME - the name of the bss label
+int SIZE - size to reserve (in bytes)
+</code></pre>
+<p>This macro reserves space for a string under the given label and should be used in <code>.bss</code> section. It also defines an assembler constant in the format <code>NAME_len</code>, which holds the given size.</p>
+<h2 id="text-section">.text section</h2>
+<h2 id="printdef"><code>printdef</code></h2>
+<p>Stands for <em>print and define</em> or <em>print already defined</em>. This macro can take different arguments.</p>
+<h3 id="just-print-string">Just print string</h3>
+<pre><code>printdef STR_VAL
+
+string STR_VAL - the string to print
+</code></pre>
+<p>This will define the string under a random identifier and add ASM code to print it. This is for one-time prints of constant strings.</p>
+<h3 id="print-and-define">Print and define</h3>
+<pre><code>printdef NAME, STR_VAL
+
+label NAME - the label to define the string under
+string STR_VAL - the string to print
+</code></pre>
+<p>Useful when you want to re-use the string in other parts of the code.</p>
+<p>Note: Consider using <code>defstr</code> for better readability and code structure.</p>
+<h3 id="print-already-defined">Print already defined</h3>
+<pre><code>printdef NAME
+
+label NAME - the defined label to print
+</code></pre>
+<p>This function ASSUMES that you defined a label <code>NAME</code> and now you want to use it.</p>
+<p>Note: This function also assumes the existence of a <code>NAME_len</code> assembler constant which it uses for the string length. (If you wish to print a dynamic string, check out <code>std print</code>)</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../basics.html" class="btn btn-neutral float-left" title="Basics"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Xantus10/Transgalactic" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../basics.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
