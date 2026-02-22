@@ -1,7 +1,9 @@
 from typing import Self
 
 from .errors import TGLIdentifierError
-from .types import Sections, DEFINED_SECTIONS
+from .interpreter import interpret
+from .parse import parseline
+from .types import InstructionList, Sections, DEFINED_SECTIONS
 
 class Code:
   def __init__(self, code: str):
@@ -21,6 +23,7 @@ class Code:
   def findSections(self):
     for i, line in enumerate(self.code):
       spl = line.split()
+      if len(spl) < 2: continue
       if spl[0] == 'section' and spl[1] in DEFINED_SECTIONS:
         self.sections[spl[1]] = i
 
@@ -29,9 +32,9 @@ class Code:
       if value >= insertIndex:
         self.sections[key] += lineCount
   
-  def writeToIx(self, ix: int, data: str, overwriteLines: int = 0):
-    self.code[ix:ix+overwriteLines] = data.split('\n')
-    self.incrementSectionIx(ix, data.count('\n')+1)
+  def writeToIx(self, ix: int, data: list[str], overwriteLines: int = 0):
+    self.code[ix:ix+overwriteLines] = data
+    self.incrementSectionIx(ix, len(data)-overwriteLines)
   
   def createSection(self, section: Sections):
     if not section in DEFINED_SECTIONS: raise TGLIdentifierError(f'Section \'{section}\' is not recognized as a TGL working section and is not supported', '')
@@ -41,9 +44,23 @@ class Code:
       if DEFINED_SECTIONS[nextSectionIx] in self.sections.keys():
         placeIndex = self.sections[DEFINED_SECTIONS[nextSectionIx]]
         break
-    self.writeToIx(placeIndex, f'section {section}')
+    self.writeToIx(placeIndex, [f'section {section}'])
     self.sections[section] = placeIndex
 
-  def writeToSection(self, section: Sections, data: str):
+  def writeToSection(self, section: Sections, data: list[str]):
     if not section in self.sections.keys(): self.createSection(section)
     self.writeToIx(self.sections[section] + 1, data)
+
+  def translateCode(self): # Remember: If you ever encounter an infinite loop, you are not erasing the original tgl command!
+    for i, line in enumerate(self.code):
+      par = parseline(line)
+      if par:
+        instructions = interpret(par)
+        self.runInstructions(instructions, i)
+
+  def runInstructions(self, instructions: InstructionList, currentIndex: int):
+    for inst in instructions:
+      if not inst['section']:
+        self.writeToIx(currentIndex, inst['content'], overwriteLines=1)
+      else:
+        self.writeToSection(inst['section'], inst['content'])
