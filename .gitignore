@@ -1,4 +1,6 @@
 __pycache__
 
+docs/site
+
 test.asm
 tgl_test.asm

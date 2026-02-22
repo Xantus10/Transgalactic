@@ -1,0 +1,7 @@
+site_name: Transgalactic
+repo_url: https://github.com/Xantus10/Transgalactic
+edit_uri: edit/master/doc/docs
+nav:
+  - Home: index.md
+theme: readthedocs
+use_directory_urls: false
