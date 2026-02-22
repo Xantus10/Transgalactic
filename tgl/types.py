@@ -1,4 +1,4 @@
-from typing import Literal, TypedDict, get_args
+from typing import Callable, Literal, TypedDict, get_args
 
 type RawArgument = str
 
@@ -16,13 +16,23 @@ type ArgTypes = ArgType_str | ArgType_int
 type TypedArgument = TypedArgument_str | TypedArgument_int
 
 
-type Namespaces = Literal['mc', 'std']
-DEFINED_NAMESPACES: tuple[Namespaces] = get_args(Namespaces.__value__)
+type Modules = Literal['mc', 'std']
+DEFINED_MODULES: tuple[Modules] = get_args(Modules.__value__)
 
 class TGLLine(TypedDict):
-  namespace: Namespaces
+  module: Modules
   func: str
   args: list[TypedArgument]
 
 type Sections = Literal['.data', '.bss', '.rodata', '.text']
 DEFINED_SECTIONS: tuple[Sections] = get_args(Sections.__value__)
+
+class Instruction(TypedDict):
+  section: Sections | None
+  content: list[str]
+
+type InstructionList = list[Instruction]
+
+type ModuleExport = dict[str, Callable[[list[TypedArgument]], InstructionList]]
+
+type ModuleTree = dict[Modules, ModuleExport]

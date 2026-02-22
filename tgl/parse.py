@@ -3,14 +3,14 @@ from shlex import shlex
 
 from .errors import TGLIdentifierError, TGLSyntaxError
 from .modules.savestate import REGISTER_LIST
-from .types import ArgTypes, RawArgument, TGLLine, TypedArgument, DEFINED_NAMESPACES
+from .types import ArgTypes, RawArgument, TGLLine, TypedArgument, DEFINED_MODULES
 
 
 
 def argparse(s: str) -> list[RawArgument]:
   lex = shlex(s, posix=False)
-  lex.whitespace = ','
-  lex.whitespace_split = True
+  lex.whitespace += ','
+  lex.whitespace_split = False
   lex.escape = '\\'
   lex.commenters = ';'
   return [arg.strip() for arg in lex]
@@ -74,8 +74,8 @@ def parseline(line: str) -> TGLLine | None:
   if len(spl) < 1: return None
   if spl[0] != '!': return None
   if len(spl) < 3: raise TGLSyntaxError('Too few words', line)
-  if not spl[1] in DEFINED_NAMESPACES: raise TGLIdentifierError(f'\'{spl[1]}\' is not a valid namespace', line)
-  return {'namespace': spl[1], 'func': spl[2], 'args': typeargs(
+  if not spl[1] in DEFINED_MODULES: raise TGLIdentifierError(f'\'{spl[1]}\' is not a valid module', line)
+  return {'module': spl[1], 'func': spl[2], 'args': typeargs(
     argparse(' '.join(spl[3:]))
   )}
 
