@@ -3,5 +3,10 @@ repo_url: https://github.com/Xantus10/Transgalactic
 edit_uri: edit/master/doc/docs
 nav:
   - Home: index.md
+  - Basics: basics.md
+  - Modules:
+    - mc: modules/mc.md
 theme: readthedocs
 use_directory_urls: false
+markdown_extensions: 
+  - tables
