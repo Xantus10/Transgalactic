@@ -9,6 +9,7 @@ class Code:
   def __init__(self, code: str):
     self.code = code.replace('\r', '').split('\n')
     self.sections: dict[Sections, int] = {}
+    self.translated = False
     self.findSections()
 
   @classmethod
@@ -52,11 +53,13 @@ class Code:
     self.writeToIx(self.sections[section] + 1, data)
 
   def translateCode(self): # Remember: If you ever encounter an infinite loop, you are not erasing the original tgl command!
-    for i, line in enumerate(self.code):
-      par = parseline(line)
-      if par:
-        instructions = interpret(par)
-        self.runInstructions(instructions, i)
+    while not self.translated:
+      self.translated = True
+      for i, line in enumerate(self.code):
+        par = parseline(line)
+        if par:
+          instructions = interpret(par)
+          self.runInstructions(instructions, i)
 
   def runInstructions(self, instructions: InstructionList, currentIndex: int):
     for inst in instructions:
@@ -64,3 +67,4 @@ class Code:
         self.writeToIx(currentIndex, inst['content'], overwriteLines=1)
       else:
         self.writeToSection(inst['section'], inst['content'])
+        self.translated = False
