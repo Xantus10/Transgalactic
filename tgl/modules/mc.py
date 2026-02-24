@@ -99,9 +99,99 @@ def mcexit(args: list[TypedArgument]) -> InstructionList:
   ]
 
 
+def inp(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'inp', 'expected': 1, 'got': len(args)}, str(args))
+  if args[0]['argtype'] != 'label': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'inp', 'expected': ('label',), 'got': (args[0]['argtype'],)}, str(args))
+  wrap = saveSyscallArgs()
+  return [
+    {
+      'section': None,
+      'content': [
+        *wrap['before'],
+        'mov rax, 0',
+        'mov rdi, 0',
+        f'lea rsi, [rel {args[0]["value"]}]',
+        f'mov rdx, {args[0]["value"]}_len',
+        'syscall',
+        *wrap['after']
+      ]
+    }
+  ]
+
+def inpdef(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'inpdef', 'expected': 2, 'got': len(args)}, str(args))
+  if not checkArgTypes(args, ['label', 'int']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'inpdef', 'expected': ('label', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
+  return [
+    {
+      'section': '.bss',
+      'content': [f'! mc resstr {args[0]["value"]},{args[1]["value"]}']
+    },
+    *inp([args[0]])
+  ]
+
+def strcp(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'strcp', 'expected': 2, 'got': len(args)}, str(args))
+  if not checkArgTypes(args, ['label', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'strcp', 'expected': ('label', 'label'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
+  wrap = saveSyscallArgs()
+  label = Global.getRandIdFor('strcp')
+  return [
+    {
+      'section': None,
+      'content': [
+        *wrap['before'],
+        f'lea rsi, [rel {args[0]["value"]}]',
+        f'lea rdi, [rel {args[1]["value"]}]',
+        f'{label}:',
+        'mov al, [rsi]',
+        'mov byte [rdi], al',
+        'inc rsi',
+        'inc rdi',
+        'test al, al',
+        f'jnz {label}',
+        *wrap['after']
+      ]
+    }
+  ]
+
+def strncp(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 3: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'strncp', 'expected': 3, 'got': len(args)}, str(args))
+  if not checkArgTypes(args, ['label', 'label', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'strncp', 'expected': ('label', 'label', 'label'), 'got': (args[0]['argtype'], args[1]['argtype'], args[2]['argtype'])}, str(args))
+  wrap = saveSyscallArgs()
+  label = Global.getRandIdFor('strncp')
+  labeldone = Global.getRandIdFor('strncp_done')
+  return [
+    {
+      'section': None,
+      'content': [
+        *wrap['before'],
+        f'lea rsi, [rel {args[0]["value"]}]',
+        f'lea rdi, [rel {args[1]["value"]}]',
+        f'xor rdx, rdx',
+        f'{label}:',
+        f'cmp rdx, {args[2]["value"]}',
+        f'je {labeldone}',
+        'mov al, [rsi]',
+        'mov byte [rdi], al',
+        'inc rsi',
+        'inc rdi',
+        'inc rdx',
+        'test al, al',
+        f'jnz {label}',
+        f'{labeldone}:',
+        *wrap['after']
+      ]
+    }
+  ]
+
+
 # Export
 FUNCTIONS: ModuleExport = {
   'defstr': defstr,
   'resstr': resstr,
-  'printdef': printdef
+  'printdef': printdef,
+  'exit': mcexit,
+  'inpdef': inpdef,
+  'inp': inp,
+  'strcp': strcp,
+  'strncp': strncp
 }
