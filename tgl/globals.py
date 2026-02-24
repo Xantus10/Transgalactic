@@ -17,7 +17,7 @@ class Global:
     if name in Global._UsedLabels: raise TGLIdentifierError(f'Duplicit identifier \'{name}\'', name)
     Global._UsedLabels.append(name)
     return Global._Prefix + name
-  
+
   @staticmethod
   def getLocalIdFor(name: str):
     return '.' + Global._Prefix + name
@@ -25,3 +25,7 @@ class Global:
   @staticmethod
   def getRandId():
     return Global.getGlobalIdFor(safeuuid())
+  
+  @staticmethod
+  def getRandIdFor(name: str):
+    return Global.getRandId() + '_' + name
