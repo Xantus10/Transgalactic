@@ -50,7 +50,9 @@ class Code:
     self.sections[section] = placeIndex
 
   def writeToSection(self, section: Sections, data: list[str]):
-    if not section in self.sections.keys(): self.createSection(section)
+    if not section in self.sections.keys():
+      self.createSection(section)
+      if self.ix != -1: self.ix += 1
     self.writeToIx(self.sections[section] + 1, data)
     if self.ix != -1: self.ix += len(data)
 
@@ -58,7 +60,8 @@ class Code:
     while not self.translated:
       self.ix = 0
       self.translated = True
-      for line in self.code:
+      for i, line in enumerate(self.code):
+        self.ix = i
         par = parseline(line)
         if par:
           instructions = interpret(par)
