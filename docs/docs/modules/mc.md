@@ -70,3 +70,61 @@ label NAME - the defined label to print
 This function ASSUMES that you defined a label `NAME` and now you want to use it.
 
 Note: This function also assumes the existence of a `NAME_len` assembler constant which it uses for the string length. (If you wish to print a dynamic string, check out `std print`)
+
+## `exit`
+
+```
+exit CODE
+
+int CODE - Exit code of the program
+```
+
+Make a syscall to SYS_EXIT with the corresponding return code.
+
+## `inpdef`
+
+```
+inpdef NAME, SIZE
+
+label NAME - the name of the bss variable
+int SIZE - size to reserve and input (in bytes)
+```
+
+This macro defines a `.bss` variable with the label `NAME` and defines the asm constant `NAME_len` with the value of `SIZE`. Then calls the stdin syscall.
+
+## `inp`
+
+```
+inp NAME
+
+label NAME - the name of the bss variable
+```
+
+This macro assumes the existence of the `.bss` variable `NAME` and the asm constant `NAME_len`. Then calls the stdin syscall.
+
+## `strcp`
+
+```
+strcp FROM, TO
+
+label FROM - the source string
+label TO - the destination string
+```
+
+This macro will copy the contents of the `FROM` string into the `TO` string.
+
+Note: **The FROM string must be NULL terminated**
+
+## `strncp`
+
+```
+strcp FROM, TO, LEN
+
+label FROM - the source string
+label TO - the destination string
+int LEN - max characters to copy
+```
+
+This macro will copy the contents of the `FROM` string into the `TO` string. It can also safeguard agains overflow with the LEN parameter.
+
+Note: **The strings must be NULL terminated**
