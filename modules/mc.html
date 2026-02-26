@@ -71,6 +71,16 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#exit">exit</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#inpdef">inpdef</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#inp">inp</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#strcp">strcp</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#strncp">strncp</a>
+    </li>
     </ul>
                   </li>
               </ul>
@@ -142,6 +152,42 @@ label NAME - the defined label to print
 </code></pre>
 <p>This function ASSUMES that you defined a label <code>NAME</code> and now you want to use it.</p>
 <p>Note: This function also assumes the existence of a <code>NAME_len</code> assembler constant which it uses for the string length. (If you wish to print a dynamic string, check out <code>std print</code>)</p>
+<h2 id="exit"><code>exit</code></h2>
+<pre><code>exit CODE
+
+int CODE - Exit code of the program
+</code></pre>
+<p>Make a syscall to SYS_EXIT with the corresponding return code.</p>
+<h2 id="inpdef"><code>inpdef</code></h2>
+<pre><code>inpdef NAME, SIZE
+
+label NAME - the name of the bss variable
+int SIZE - size to reserve and input (in bytes)
+</code></pre>
+<p>This macro defines a <code>.bss</code> variable with the label <code>NAME</code> and defines the asm constant <code>NAME_len</code> with the value of <code>SIZE</code>. Then calls the stdin syscall.</p>
+<h2 id="inp"><code>inp</code></h2>
+<pre><code>inp NAME
+
+label NAME - the name of the bss variable
+</code></pre>
+<p>This macro assumes the existence of the <code>.bss</code> variable <code>NAME</code> and the asm constant <code>NAME_len</code>. Then calls the stdin syscall.</p>
+<h2 id="strcp"><code>strcp</code></h2>
+<pre><code>strcp FROM, TO
+
+label FROM - the source string
+label TO - the destination string
+</code></pre>
+<p>This macro will copy the contents of the <code>FROM</code> string into the <code>TO</code> string.</p>
+<p>Note: <strong>The FROM string must be NULL terminated</strong></p>
+<h2 id="strncp"><code>strncp</code></h2>
+<pre><code>strcp FROM, TO, LEN
+
+label FROM - the source string
+label TO - the destination string
+int LEN - max characters to copy
+</code></pre>
+<p>This macro will copy the contents of the <code>FROM</code> string into the <code>TO</code> string. It can also safeguard agains overflow with the LEN parameter.</p>
+<p>Note: <strong>The strings must be NULL terminated</strong></p>
               
             </div>
           </div><footer>
