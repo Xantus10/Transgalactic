@@ -4,6 +4,7 @@ edit_uri: edit/master/doc/docs
 nav:
   - Home: index.md
   - Basics: basics.md
+  - Command line tool: cli.md
   - Modules:
     - mc: modules/mc.md
 theme: readthedocs
