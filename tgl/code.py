@@ -1,6 +1,7 @@
 from typing import Self
 
 from .errors import TGLIdentifierError
+from .globals import Global
 from .interpreter import interpret
 from .parse import parseline
 from .types import InstructionList, Sections, DEFINED_SECTIONS
@@ -18,7 +19,8 @@ class Code:
     with open(filename, 'r') as f:
       return cls(f.read())
   
-  def saveToFile(self, filename: str):
+  def saveToFile(self, filename: str | None):
+    if not filename: filename = Global.getRawPrefix()
     with open(filename, 'w') as f:
       f.write('\n'.join(self.code))
 

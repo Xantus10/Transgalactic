@@ -81,3 +81,6 @@ type InstructionList = list[Instruction]
 type ModuleExport = dict[str, Callable[[list[TypedArgument]], InstructionList]]
 
 type ModuleTree = dict[Modules, ModuleExport]
+
+class GlobalOptions(TypedDict):
+  silent: bool

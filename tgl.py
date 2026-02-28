@@ -1,9 +1,7 @@
-from tgl.code import Code
-from tgl.errors import TGLError
+#!/usr/bin/env python3
 
-try:
-  c = Code.loadFromFile('test.asm')
-  c.translateCode()
-  c.saveToFile('tgl_test.asm')
-except TGLError as e:
-  print(e.printable())
+from tgl.cli import main
+
+
+if __name__ == '__main__':
+  main()
