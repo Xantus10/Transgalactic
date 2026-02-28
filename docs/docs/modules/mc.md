@@ -127,4 +127,4 @@ int LEN - max characters to copy
 
 This macro will copy the contents of the `FROM` string into the `TO` string. It can also safeguard agains overflow with the LEN parameter.
 
-Note: **The strings must be NULL terminated**
+Note: **The FROM string must be NULL terminated**
