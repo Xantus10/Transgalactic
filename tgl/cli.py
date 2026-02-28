@@ -6,18 +6,19 @@ from .globals import Global
 
 def createParser() -> argparse.ArgumentParser:
   parser = argparse.ArgumentParser(
-    prog="Transgalactic",
-    description="Extension for 64bit NASM",
+    prog="tgl.py",
+    description="Translate TGL enhanced ASM into pure NASM",
     epilog="For more info check out https://xantus10.github.io/Transgalactic/"
   )
 
   parser.add_argument(
-    'input',
+    'input_file',
     help='Input filename'
   )
 
   parser.add_argument(
     '-o', '--output',
+    dest='output_file',
     help='Output filename (defaults to TGL--{GLOBAL_PREFIX}.asm)'
   )
 
@@ -27,7 +28,9 @@ def createParser() -> argparse.ArgumentParser:
     help='Program will not produce output'
   )
 
-  parser.add_argument(
+  advanced = parser.add_argument_group('Advanced options')
+
+  advanced.add_argument(
     '--global-prefix-override',
     help='Specify a custom global prefix to use instead of a random UUID'
   )
@@ -42,8 +45,8 @@ def main():
     if args.silent: Global.options['silent'] = True
     if args.global_prefix_override: Global.overridePrefix(args.global_prefix_override)
 
-    code = Code.loadFromFile(args.input)
+    code = Code.loadFromFile(args.input_file)
     code.translateCode()
-    code.saveToFile(args.output)
+    code.saveToFile(args.output_file)
   except TGLError as e:
     if not Global.options['silent']: print(e.printable())
