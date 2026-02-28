@@ -3,17 +3,17 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>Transgalactic</title>
+    <title>Command line tool - Transgalactic</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Home";
-        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_name = "Command line tool";
+        var mkdocs_page_input_path = "cli.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -39,22 +39,36 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#about">About</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#support">Support</a>
-    </li>
-    </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
                 </li>
               </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="cli.html">Command line tool</a>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Command line tool</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#running-the-program">Running the program</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#basic-options">Basic options</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-h-or-help">-h or --help</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-o-or-output-output_file">-o or --output OUTPUT_FILE</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-s-or-silent">-s or --silent</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#advanced-options">Advanced options</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-global-prefix-override-global_prefix_override">--global-prefix-override GLOBAL_PREFIX_OVERRIDE</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Modules</span></p>
@@ -76,9 +90,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Home</li>
+      <li class="breadcrumb-item active">Command line tool</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Xantus10/Transgalactic/edit/master/doc/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Xantus10/Transgalactic/edit/master/doc/docs/cli.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -86,16 +100,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="transgalactic">Transgalactic</h1>
-<h2 id="about">About</h2>
-<p>Transgalactic (or TGL for short) is an ASM extension allowing you to write comfier ASM. It features a macro like functionality and can function like a basic standard library for ASM.</p>
-<h2 id="support">Support</h2>
-<p>Now only supports 64 bit NASM.</p>
+                <h1 id="usage-from-cli">Usage from CLI</h1>
+<h2 id="running-the-program">Running the program</h2>
+<p>You may run the Transgalactic python script using the following:</p>
+<ol>
+<li>Run <code>python tgl.py</code></li>
+<li>Run <code>python -m tgl</code></li>
+<li>On linux you may simply type <code>./tgl.py</code></li>
+</ol>
+<p>You always have to pass the input filename in the CLI.</p>
+<p><code>tgl.py myprogram.asm</code></p>
+<h2 id="basic-options">Basic options</h2>
+<h3 id="-h-or-help"><code>-h</code> or <code>--help</code></h3>
+<p>Print the help message.</p>
+<h3 id="-o-or-output-output_file"><code>-o</code> or <code>--output OUTPUT_FILE</code></h3>
+<p>You may specify the output file name. If this option is not used, the filename will be <code>TGL--{GLOBAL_PREFIX}.asm</code>.</p>
+<h3 id="-s-or-silent"><code>-s</code> or <code>--silent</code></h3>
+<p>The program will not output any info messages or errors.</p>
+<h2 id="advanced-options">Advanced options</h2>
+<p>The following options interact with Transgalactic on a prime level and may cause errors if mishandled.</p>
+<h3 id="-global-prefix-override-global_prefix_override"><code>--global-prefix-override GLOBAL_PREFIX_OVERRIDE</code></h3>
+<p>By default Transgalactic uses a random UUIDv4 for label names to avoid name conflicts. You may use this option to override this behavior and instead use your own prefix (note that the prefix must abide by the rules for label names for NASM).</p>
+<p>Example: Creating global label name for <code>strlen</code></p>
+<p>Default prefix: <code>TGL__a3db3421_8f10_418d_8751_f6b8aa46c186_strlen</code></p>
+<p>Using <code>--global-prefix-override HELLO_</code> results in: <code>HELLO_strlen</code></p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="basics.html" class="btn btn-neutral float-right" title="Basics">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="basics.html" class="btn btn-neutral float-left" title="Basics"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="modules/mc.html" class="btn btn-neutral float-right" title="mc">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -122,8 +156,10 @@
         </span>
     
     
+      <span><a href="basics.html" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-      <span><a href="basics.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+      <span><a href="modules/mc.html" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -140,8 +176,3 @@
 
 </body>
 </html>
-
-<!--
-MkDocs version : 1.6.1
-Build Date UTC : 2026-02-28 20:06:19.042171+00:00
--->
