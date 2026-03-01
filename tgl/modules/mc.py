@@ -5,7 +5,7 @@ from ..globals import Global
 from ..parse import checkArgTypes, strparse
 from ..types import InstructionList, ModuleExport, TypedArgument
 
-from .savestate import saveSyscallArgs
+from .savestate import saveRegs, saveSyscallArgs
 
 ### .data section macros
 
@@ -182,6 +182,25 @@ def strncp(args: list[TypedArgument]) -> InstructionList:
       ]
     }
   ]
+
+
+def time(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 0: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'time', 'expected': 0, 'got': len(args)}, str(args))
+  rdisave = saveRegs(['rdi'])
+  return [
+    {
+      'section': None,
+      'content': [
+        *rdisave['before'],
+        'mov rax, 201',
+        'xor rdi, rdi',
+        'syscall',
+        *rdisave['after']
+      ]
+    }
+  ]
+
+
 
 
 # Export
