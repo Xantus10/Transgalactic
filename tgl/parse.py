@@ -1,9 +1,8 @@
 from re import match
 from shlex import shlex
 
-from .errors import TGLIdentifierError, TGLSyntaxError
-from .modules.savestate import REGISTER_LIST
-from .types import ArgTypes, RawArgument, TGLLine, TypedArgument, DEFINED_MODULES
+from .errors import TGLIdentifierError, TGLSyntaxError, TGLValueError
+from .types import ArgTypes, FileModeInt, RawArgument, TGLLine, TypedArgument, DEFINED_MODULES, FILE_MODES_INT, FILE_MODES_STR, REGISTER_LIST
 
 
 
@@ -63,6 +62,8 @@ def typeargs(args: list[RawArgument]) -> list[TypedArgument]:
       res.append({'argtype': 'int', 'value': int(arg)})
     elif match(r'0x[A-Fa-f0-9]+', arg):
       res.append({'argtype': 'int', 'value': int(arg[2:], 16)})
+    elif match(r'0o[0-7]+', arg):
+      res.append({'argtype': 'int', 'value': int(arg[2:], 8)})
     elif arg in REGISTER_LIST:
       res.append({'argtype': 'register', 'value': arg})
     else:
@@ -83,3 +84,11 @@ def checkArgTypes(args: list[TypedArgument], check: list[ArgTypes]) -> bool:
   for i in range(len(args)):
     if args[i]['argtype'] != check[i]: return False
   return True
+
+
+## Special values convertors
+
+
+def toFileModeInt(mode: str) -> FileModeInt:
+  if not mode in FILE_MODES_STR: raise TGLValueError(f'Invalid mode of operation: {mode}', f'{mode=}')
+  return FILE_MODES_INT[FILE_MODES_STR.index(mode)]

@@ -65,3 +65,10 @@ class TGLArgumentError(TGLSyntaxError):
         return cls(f'Invalid argument count for \'{data["func_name"]}\' (expected: {data["expected"]}, got: {data["got"]})', line)
       case 'argtypes':
         return cls(f'Invalid argument types for \'{data["func_name"]}\' (expected: {data["expected"]}, got: {data["got"]})', line)
+
+class TGLValueError(TGLSyntaxError):
+  """
+  An invalid value for a field (Similar to Identifier error)
+  """
+  def __init__(self, msg: str, line: str) -> None:
+    super().__init__(msg, line)

@@ -84,3 +84,10 @@ type ModuleTree = dict[Modules, ModuleExport]
 
 class GlobalOptions(TypedDict):
   silent: bool
+  dont_save_regs: bool
+
+type FileModeStr = Literal['R', 'W', 'RW']
+FILE_MODES_STR = get_args(FileModeStr.__value__)
+type FileModeInt = Literal[0, 1, 2]
+FILE_MODES_INT = get_args(FileModeInt.__value__)
+
