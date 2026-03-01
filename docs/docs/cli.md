@@ -31,6 +31,10 @@ The program will not output any info messages or errors.
 
 The following options interact with Transgalactic on a prime level and may cause errors if mishandled.
 
+### `--dont-save-regs`
+
+Transgalactic functions have to modify registers. In order to not break your program the registers are always saved using `push` and then restored using `pop`. This is so you don't have to juggle the values from the registers, however it creates some overhead. The `--dont-save-regs` switch disables this behavior, so it's your responsibility now to ensure that you don't mind certain registers being overwritten.
+
 ### `--global-prefix-override GLOBAL_PREFIX_OVERRIDE`
 
 By default Transgalactic uses a random UUIDv4 for label names to avoid name conflicts. You may use this option to override this behavior and instead use your own prefix (note that the prefix must abide by the rules for label names for NASM).

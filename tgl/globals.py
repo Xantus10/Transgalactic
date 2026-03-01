@@ -11,7 +11,8 @@ class Global:
   _UsedLabels: list[str] = []
 
   options: GlobalOptions = {
-    'silent': False
+    'silent': False,
+    'dont_save_regs': False
   }
 
   @staticmethod

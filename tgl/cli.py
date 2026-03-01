@@ -31,6 +31,12 @@ def createParser() -> argparse.ArgumentParser:
   advanced = parser.add_argument_group('Advanced options')
 
   advanced.add_argument(
+    '--dont-save-regs',
+    action='store_true',
+    help='Do not perform register saving (Can break your code; Check the documentation)'
+  )
+
+  advanced.add_argument(
     '--global-prefix-override',
     help='Specify a custom global prefix to use instead of a random UUID'
   )
@@ -43,6 +49,7 @@ def main():
   
   try:
     if args.silent: Global.options['silent'] = True
+    if args.dont_save_regs: Global.options['dont_save_regs'] = True
     if args.global_prefix_override: Global.overridePrefix(args.global_prefix_override)
 
     code = Code.loadFromFile(args.input_file)

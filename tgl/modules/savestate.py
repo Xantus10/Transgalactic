@@ -1,9 +1,15 @@
 from ..errors import TGLIdentifierError
+from ..globals import Global
 from ..types import CodeWrapper, Registers, REGISTER_LIST
 
 def saveRegs(registers: list[Registers]) -> CodeWrapper:
   bef: list[str] = []
   aft: list[str] = []
+  if Global.options['dont_save_regs']:
+    return {
+      'before': bef,
+      'after': aft
+    }
   for i in range(len(registers)):
     r = registers[i]
     if not r in REGISTER_LIST: raise TGLIdentifierError(f'Unsupported register \'{r}\'', '')
