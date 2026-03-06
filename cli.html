@@ -64,7 +64,21 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#advanced-options">Advanced options</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#-global-prefix-override-global_prefix_override">--global-prefix-override GLOBAL_PREFIX_OVERRIDE</a>
+    <li class="toctree-l3"><a class="reference internal" href="#regsiters-modification-options">Regsiters modification options</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#-dont-save-regs">--dont-save-regs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#-work-regs-set-regs_set">--work-regs-set REGS_SET</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#-dont-save-syscall">--dont-save-syscall</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#other-options">Other options</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#-global-prefix-override-global_prefix_override">--global-prefix-override GLOBAL_PREFIX_OVERRIDE</a>
+    </li>
+        </ul>
     </li>
         </ul>
     </li>
@@ -119,7 +133,26 @@
 <p>The program will not output any info messages or errors.</p>
 <h2 id="advanced-options">Advanced options</h2>
 <p>The following options interact with Transgalactic on a prime level and may cause errors if mishandled.</p>
-<h3 id="-global-prefix-override-global_prefix_override"><code>--global-prefix-override GLOBAL_PREFIX_OVERRIDE</code></h3>
+<h3 id="regsiters-modification-options">Regsiters modification options</h3>
+<p>Transgalactic functions have to modify registers. In order to not break your program the registers are always saved using <code>push</code> and then restored using <code>pop</code>. This is so you don't have to juggle the values from the registers, however it creates some overhead (results in inefficient and ugly ASM). The following flags modify this behavior.</p>
+<p>Note: for functions that return a value, the ret register is not saved</p>
+<h4 id="-dont-save-regs"><code>--dont-save-regs</code></h4>
+<p>This flag will disable the flag saving for every macro except those marked by the syscall tag. (It is meant to be used in combination with <code>--work-regs-set</code>)</p>
+<h4 id="-work-regs-set-regs_set"><code>--work-regs-set REGS_SET</code></h4>
+<p>This option allows you to choose which registers will tgl operate on. It is recommended you choose a set of regs that you will not use and the combine with <code>--dont-save-regs</code>.</p>
+<p>The values are as follows:</p>
+<ul>
+<li><code>SYSCALL</code> - <code>RAX, RDI, RSI, RDX</code> (default)</li>
+<li><code>ALPH</code> - <code>RAX, RBX, RCX, RDX</code></li>
+<li><code>RSTART</code> - <code>R8, R9, R10, R11</code></li>
+<li><code>REND</code> - <code>R12, R13, R14, R15</code></li>
+</ul>
+<h4 id="-dont-save-syscall"><code>--dont-save-syscall</code></h4>
+<p>This flag disables saving the registers for syscall tagged macros. In combination with <code>--dont-save-regs</code>, you essentially completely turn off all register saving procedures. This means that you yourself are responsible for maintaining the correct values in your program.</p>
+<p>If you choose to do so, then you might want to work in the R8-R15 register range for your tasks and not invade the syscall registers as much as possible.</p>
+<p>You can also choose to not save registers if your whole program uses Transgalactic (so you are not doing anything in raw ASM).</p>
+<h3 id="other-options">Other options</h3>
+<h4 id="-global-prefix-override-global_prefix_override"><code>--global-prefix-override GLOBAL_PREFIX_OVERRIDE</code></h4>
 <p>By default Transgalactic uses a random UUIDv4 for label names to avoid name conflicts. You may use this option to override this behavior and instead use your own prefix (note that the prefix must abide by the rules for label names for NASM).</p>
 <p>Example: Creating global label name for <code>strlen</code></p>
 <p>Default prefix: <code>TGL__a3db3421_8f10_418d_8751_f6b8aa46c186_strlen</code></p>
