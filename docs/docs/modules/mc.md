@@ -4,6 +4,27 @@ The `mc` module functions are the simplest you can find in TGL. They are basical
 
 Here is the documentation for them
 
+## Format
+
+```
+{name_of_macro} ARG1, ARG2
+
+type ARG1 - First arg
+type ARG2 - Second arg
+
+tags: {List of tags}
+```
+
+### Tags
+
+Tags are used to convey some sort of information.
+
+The tags feature these:
+ - `syscall` - this macro performs a syscall
+ - `regs[rdi, rsi, ...]` - this tag marks the used registers
+ - `ret[rax]` - this tag marks the registers used to return values from macro
+
+
 ## .data section
 
 ## `defstr`
@@ -42,6 +63,8 @@ Stands for *print and define* or *print already defined*. This macro can take di
 printdef STR_VAL
 
 string STR_VAL - the string to print
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
 ```
 
 This will define the string under a random identifier and add ASM code to print it. This is for one-time prints of constant strings.
@@ -53,6 +76,8 @@ printdef NAME, STR_VAL
 
 label NAME - the label to define the string under
 string STR_VAL - the string to print
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
 ```
 
 Useful when you want to re-use the string in other parts of the code.
@@ -65,6 +90,8 @@ Note: Consider using `defstr` for better readability and code structure.
 printdef NAME
 
 label NAME - the defined label to print
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
 ```
 
 This function ASSUMES that you defined a label `NAME` and now you want to use it.
@@ -77,6 +104,8 @@ Note: This function also assumes the existence of a `NAME_len` assembler constan
 exit CODE
 
 int CODE - Exit code of the program
+
+tags: syscall, regs[rax, rdi]
 ```
 
 Make a syscall to SYS_EXIT with the corresponding return code.
@@ -88,6 +117,8 @@ inpdef NAME, SIZE
 
 label NAME - the name of the bss variable
 int SIZE - size to reserve and input (in bytes)
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
 ```
 
 This macro defines a `.bss` variable with the label `NAME` and defines the asm constant `NAME_len` with the value of `SIZE`. Then calls the stdin syscall.
@@ -98,6 +129,8 @@ This macro defines a `.bss` variable with the label `NAME` and defines the asm c
 inp NAME
 
 label NAME - the name of the bss variable
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
 ```
 
 This macro assumes the existence of the `.bss` variable `NAME` and the asm constant `NAME_len`. Then calls the stdin syscall.
@@ -109,6 +142,8 @@ strcp FROM, TO
 
 label FROM - the source string
 label TO - the destination string
+
+tags: regs[al, rdi, rsi]
 ```
 
 This macro will copy the contents of the `FROM` string into the `TO` string.
@@ -123,6 +158,8 @@ strcp FROM, TO, LEN
 label FROM - the source string
 label TO - the destination string
 int LEN - max characters to copy
+
+tags: regs[al, rdi, rsi, rdx]
 ```
 
 This macro will copy the contents of the `FROM` string into the `TO` string. It can also safeguard agains overflow with the LEN parameter.
@@ -133,6 +170,8 @@ Note: **The FROM string must be NULL terminated**
 
 ```
 time
+
+tags: syscall, regs[rax, rdi]
 ```
 
 Get the current UNIX timestamp in the RAX register.

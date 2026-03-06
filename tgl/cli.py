@@ -3,6 +3,7 @@ import argparse
 from .code import Code
 from .errors import TGLError
 from .globals import Global
+from .types import REGS_SET_SYSCALL, REGS_SET_ALPH, REGS_SET_RSTART, REGS_SET_REND
 
 def createParser() -> argparse.ArgumentParser:
   parser = argparse.ArgumentParser(
@@ -33,7 +34,20 @@ def createParser() -> argparse.ArgumentParser:
   advanced.add_argument(
     '--dont-save-regs',
     action='store_true',
-    help='Do not perform register saving (Can break your code; Check the documentation)'
+    help='Do not perform register saving for non syscall macros (Can break your code; Check the documentation)'
+  )
+
+  advanced.add_argument(
+    '--work-regs-set',
+    dest='regs_set',
+    choices=['SYSCALL', 'ALPH', 'RSTART', 'REND'],
+    help='The registers set macros will operate on'
+  )
+
+  advanced.add_argument(
+    '--dont-save-syscall',
+    action='store_true',
+    help='Do not perform register saving for syscall macros (Can break your code; Check the documentation)'
   )
 
   advanced.add_argument(
@@ -50,7 +64,18 @@ def main():
   try:
     if args.silent: Global.options['silent'] = True
     if args.dont_save_regs: Global.options['dont_save_regs'] = True
+    if args.dont_save_syscall: Global.options['dont_save_syscall'] = True
     if args.global_prefix_override: Global.overridePrefix(args.global_prefix_override)
+    match args.regs_set:
+      case 'SYSCALL':
+        Global.regs = REGS_SET_SYSCALL
+      case 'ALPH':
+        Global.regs = REGS_SET_ALPH
+      case 'RSTART':
+        Global.regs = REGS_SET_RSTART
+      case 'REND':
+        Global.regs = REGS_SET_REND
+      case _: pass
 
     code = Code.loadFromFile(args.input_file)
     code.translateCode()

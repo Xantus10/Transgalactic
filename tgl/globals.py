@@ -2,7 +2,7 @@ from uuid import uuid4
 from re import match
 
 from .errors import TGLIdentifierError, TGLSyntaxError
-from .types import GlobalOptions
+from .types import GlobalOptions, GlobalRegs, REGS_SET_SYSCALL
 
 safeuuid = lambda: str(uuid4()).replace('-', '_')
 
@@ -12,8 +12,11 @@ class Global:
 
   options: GlobalOptions = {
     'silent': False,
-    'dont_save_regs': False
+    'dont_save_regs': False,
+    'dont_save_syscall': False
   }
+
+  regs: GlobalRegs = REGS_SET_SYSCALL
 
   @staticmethod
   def overridePrefix(new_prefix: str):

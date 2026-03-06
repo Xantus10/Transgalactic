@@ -72,3 +72,10 @@ class TGLValueError(TGLSyntaxError):
   """
   def __init__(self, msg: str, line: str) -> None:
     super().__init__(msg, line)
+
+class TGLNonexistentError(TGLError):
+  """
+  Tried to use nonexistent resource
+  """
+  def __init__(self, msg: str, line: str) -> None:
+    super().__init__(msg, line)

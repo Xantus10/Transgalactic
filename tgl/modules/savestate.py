@@ -2,14 +2,9 @@ from ..errors import TGLIdentifierError
 from ..globals import Global
 from ..types import CodeWrapper, Registers, REGISTER_LIST
 
-def saveRegs(registers: list[Registers]) -> CodeWrapper:
+def _saveRegs(registers: list[Registers]) -> CodeWrapper:
   bef: list[str] = []
   aft: list[str] = []
-  if Global.options['dont_save_regs']:
-    return {
-      'before': bef,
-      'after': aft
-    }
   for i in range(len(registers)):
     r = registers[i]
     if not r in REGISTER_LIST: raise TGLIdentifierError(f'Unsupported register \'{r}\'', '')
@@ -20,5 +15,16 @@ def saveRegs(registers: list[Registers]) -> CodeWrapper:
     'after': aft
   }
 
-save4regs = lambda: saveRegs(['rax', 'rbx', 'rcx', 'rdx'])
-saveSyscallArgs = lambda: saveRegs(['rax', 'rdi', 'rsi', 'rdx'])
+
+def saveRegs(registers: list[Registers]):
+  if Global.options['dont_save_regs']:
+    return _saveRegs([])
+  return _saveRegs(registers)
+
+
+def saveSyscallArgs(ret: Registers | None = None):
+  if Global.options['dont_save_syscall']:
+    return _saveRegs([])
+  sys: list[Registers] = ['rax', 'rdi', 'rsi', 'rdx']
+  if ret in sys: sys.remove(ret)
+  return _saveRegs(sys)

@@ -1,6 +1,6 @@
 from typing import cast
 
-from ..errors import TGLArgumentError
+from ..errors import TGLArgumentError, TGLNonexistentError
 from ..globals import Global
 from ..parse import checkArgTypes, strparse
 from ..types import InstructionList, ModuleExport, TypedArgument
@@ -132,21 +132,26 @@ def inpdef(args: list[TypedArgument]) -> InstructionList:
 def strcp(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'strcp', 'expected': 2, 'got': len(args)}, str(args))
   if not checkArgTypes(args, ['label', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'strcp', 'expected': ('label', 'label'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
-  wrap = saveSyscallArgs()
+  rax = Global.regs['r1']
+  rdi = Global.regs['r2']['b64']
+  rsi = Global.regs['r3']['b64']
+  al = rax['b8']
+  if not al: raise TGLNonexistentError(f'Tried to use lower 8bit register of {rax["b64"]}, which does not exist.', '')
+  wrap = saveRegs([rax['b64'], rdi, rsi])
   label = Global.getRandIdFor('strcp')
   return [
     {
       'section': None,
       'content': [
         *wrap['before'],
-        f'lea rsi, [rel {args[0]["value"]}]',
-        f'lea rdi, [rel {args[1]["value"]}]',
+        f'lea {rsi}, [rel {args[0]["value"]}]',
+        f'lea {rdi}, [rel {args[1]["value"]}]',
         f'{label}:',
-        'mov al, [rsi]',
-        'mov byte [rdi], al',
-        'inc rsi',
-        'inc rdi',
-        'test al, al',
+        f'mov {al}, [{rsi}]',
+        f'mov byte [{rdi}], {al}',
+        f'inc {rsi}',
+        f'inc {rdi}',
+        f'test {al}, {al}',
         f'jnz {label}',
         *wrap['after']
       ]
@@ -156,7 +161,13 @@ def strcp(args: list[TypedArgument]) -> InstructionList:
 def strncp(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 3: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'strncp', 'expected': 3, 'got': len(args)}, str(args))
   if not checkArgTypes(args, ['label', 'label', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'strncp', 'expected': ('label', 'label', 'label'), 'got': (args[0]['argtype'], args[1]['argtype'], args[2]['argtype'])}, str(args))
-  wrap = saveSyscallArgs()
+  rax = Global.regs['r1']
+  rdi = Global.regs['r2']['b64']
+  rsi = Global.regs['r3']['b64']
+  rdx = Global.regs['r4']['b64']
+  al = rax['b8']
+  if not al: raise TGLNonexistentError(f'Tried to use lower 8bit register of {rax["b64"]}, which does not exist.', '')
+  wrap = saveRegs([rax['b64'], rdi, rsi, rdx])
   label = Global.getRandIdFor('strncp')
   labeldone = Global.getRandIdFor('strncp_done')
   return [
@@ -164,18 +175,18 @@ def strncp(args: list[TypedArgument]) -> InstructionList:
       'section': None,
       'content': [
         *wrap['before'],
-        f'lea rsi, [rel {args[0]["value"]}]',
-        f'lea rdi, [rel {args[1]["value"]}]',
-        f'xor rdx, rdx',
+        f'lea {rsi}, [rel {args[0]["value"]}]',
+        f'lea {rdi}, [rel {args[1]["value"]}]',
+        f'xor {rdx}, {rdx}',
         f'{label}:',
-        f'cmp rdx, {args[2]["value"]}',
+        f'cmp {rdx}, {args[2]["value"]}',
         f'je {labeldone}',
-        'mov al, [rsi]',
-        'mov byte [rdi], al',
-        'inc rsi',
-        'inc rdi',
-        'inc rdx',
-        'test al, al',
+        f'mov {al}, [{rsi}]',
+        f'mov byte [{rdi}], {al}',
+        f'inc {rsi}',
+        f'inc {rdi}',
+        f'inc {rdx}',
+        f'test {al}, {al}',
         f'jnz {label}',
         f'{labeldone}:',
         *wrap['after']
@@ -186,7 +197,7 @@ def strncp(args: list[TypedArgument]) -> InstructionList:
 
 def time(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 0: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'time', 'expected': 0, 'got': len(args)}, str(args))
-  rdisave = saveRegs(['rdi'])
+  rdisave = saveSyscallArgs('rax')
   return [
     {
       'section': None,
