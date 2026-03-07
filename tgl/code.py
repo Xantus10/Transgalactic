@@ -4,7 +4,7 @@ from .errors import TGLIdentifierError
 from .globals import Global
 from .interpreter import interpret
 from .parse import parseline
-from .types import InstructionList, Sections, DEFINED_SECTIONS
+from .types import InstructionList, Sections, DEFINED_SECTIONS, isInsertInstruction, isWriteToSectionInstruction
 
 class Code:
   def __init__(self, code: str):
@@ -57,6 +57,7 @@ class Code:
       if self.ix != -1: self.ix += 1
     self.writeToIx(self.sections[section] + 1, data)
     if self.ix != -1: self.ix += len(data)
+    self.translated = False
 
   def translateCode(self): # Remember: If you ever encounter an infinite loop, you are not erasing the original tgl command!
     while not self.translated:
@@ -70,10 +71,10 @@ class Code:
           self.runInstructions(instructions)
         self.ix += 1
 
+
   def runInstructions(self, instructions: InstructionList):
     for inst in instructions:
-      if not inst['section']:
+      if isInsertInstruction(inst):
         self.writeToIx(self.ix, inst['content'], overwriteLines=1)
-      else:
+      elif isWriteToSectionInstruction(inst):
         self.writeToSection(inst['section'], inst['content'])
-        self.translated = False

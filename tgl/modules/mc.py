@@ -1,9 +1,7 @@
-from typing import cast
-
 from ..errors import TGLArgumentError, TGLNonexistentError
 from ..globals import Global
 from ..parse import checkArgTypes, strparse
-from ..types import InstructionList, ModuleExport, TypedArgument
+from ..types import InstructionList, ModuleExport, TypedArgument, isArgString, isArgInt
 
 from .savestate import saveRegs, saveSyscallArgs
 
@@ -11,12 +9,12 @@ from .savestate import saveRegs, saveSyscallArgs
 
 def defstr(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'defstr', 'expected': 2, 'got': len(args)}, str(args))
-  if not checkArgTypes(args, ['label', 'string']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'defstr', 'expected': ('label', 'string'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
+  if not checkArgTypes(args, ['label', 'string']) or not isArgString(args[1]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'defstr', 'expected': ('label', 'string'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
   return [
     {
-      'section': None,
+      'op': None,
       'content': [
-        f'{args[0]["value"]}_len equ {len(strparse(cast(str, args[1]["value"])))}',
+        f'{args[0]["value"]}_len equ {len(strparse(args[1]["value"]))}',
         f'{args[0]["value"]}: db {args[1]["value"]}'
       ]
     }
@@ -26,11 +24,11 @@ def defstr(args: list[TypedArgument]) -> InstructionList:
 
 def resstr(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'resstr', 'expected': 2, 'got': len(args)}, str(args))
-  if not checkArgTypes(args, ['label', 'int']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'resstr', 'expected': ('label', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
-  if cast(int, args[1]['value']) < 0: raise TGLArgumentError(f'Cannot allocate negative size (got {args[1]["value"]})', str(args))
+  if not checkArgTypes(args, ['label', 'int']) or not isArgInt(args[1]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'resstr', 'expected': ('label', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
+  if args[1]['value'] < 0: raise TGLArgumentError(f'Cannot allocate negative size (got {args[1]["value"]})', str(args))
   return [
     {
-      'section': None,
+      'op': None,
       'content': [
         f'{args[0]["value"]}_len equ {args[1]["value"]}',
         f'{args[0]["value"]}: resb {args[0]["value"]}_len'
@@ -44,7 +42,7 @@ def printdef_defined(args: list[TypedArgument]) -> InstructionList:
   wrap = saveSyscallArgs()
   return [
     {
-      'section': None,
+      'op': None,
       'content': [
         *wrap['before'],
         'mov rax 1',
@@ -61,6 +59,7 @@ def printdef_defname(args: list[TypedArgument]) -> InstructionList:
   if not checkArgTypes(args, ['label', 'string']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'printdef', 'expected': ('label', 'string'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
   return [
     {
+      'op': 'section',
       'section': '.rodata',
       'content': [f'! mc defstr {args[0]["value"]},{args[1]["value"]}']
     },
@@ -89,7 +88,7 @@ def mcexit(args: list[TypedArgument]) -> InstructionList:
   if not args[0]['argtype'] == 'int': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'exit', 'expected': ('int',), 'got': (args[0]['argtype'],)}, str(args))
   return [
     {
-      'section': None,
+      'op': None,
       'content': [
         'mov rax, 60',
         f'mov rdi, {args[0]["value"]}',
@@ -105,7 +104,7 @@ def inp(args: list[TypedArgument]) -> InstructionList:
   wrap = saveSyscallArgs()
   return [
     {
-      'section': None,
+      'op': None,
       'content': [
         *wrap['before'],
         'mov rax, 0',
@@ -123,6 +122,7 @@ def inpdef(args: list[TypedArgument]) -> InstructionList:
   if not checkArgTypes(args, ['label', 'int']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'inpdef', 'expected': ('label', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
   return [
     {
+      'op': 'section',
       'section': '.bss',
       'content': [f'! mc resstr {args[0]["value"]},{args[1]["value"]}']
     },
@@ -141,7 +141,7 @@ def strcp(args: list[TypedArgument]) -> InstructionList:
   label = Global.getRandIdFor('strcp')
   return [
     {
-      'section': None,
+      'op': None,
       'content': [
         *wrap['before'],
         f'lea {rsi}, [rel {args[0]["value"]}]',
@@ -172,7 +172,7 @@ def strncp(args: list[TypedArgument]) -> InstructionList:
   labeldone = Global.getRandIdFor('strncp_done')
   return [
     {
-      'section': None,
+      'op': None,
       'content': [
         *wrap['before'],
         f'lea {rsi}, [rel {args[0]["value"]}]',
@@ -200,7 +200,7 @@ def time(args: list[TypedArgument]) -> InstructionList:
   rdisave = saveSyscallArgs('rax')
   return [
     {
-      'section': None,
+      'op': None,
       'content': [
         *rdisave['before'],
         'mov rax, 201',

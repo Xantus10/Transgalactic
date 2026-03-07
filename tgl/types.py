@@ -1,4 +1,4 @@
-from typing import Callable, Literal, TypedDict, get_args
+from typing import Callable, Literal, TypedDict, TypeGuard, get_args
 
 type RawArgument = str
 
@@ -15,6 +15,11 @@ class TypedArgument_int(TypedDict):
 type ArgTypes = ArgType_str | ArgType_int
 type TypedArgument = TypedArgument_str | TypedArgument_int
 
+def isArgString(a: TypedArgument) -> TypeGuard[TypedArgument_str]:
+  return a['argtype'] in ['string', 'register', 'label']
+
+def isArgInt(a: TypedArgument) -> TypeGuard[TypedArgument_int]:
+  return a['argtype'] == 'int'
 
 type Modules = Literal['mc', 'std']
 DEFINED_MODULES: tuple[Modules] = get_args(Modules.__value__)
@@ -203,11 +208,28 @@ REGISTER_HIERARCHY: dict[RegFamily, RegFamilyList] = {
   }
 }
 
-class Instruction(TypedDict):
-  section: Sections | None
+
+class InsertInstruction(TypedDict):
+  op: None
   content: list[str]
 
+class WriteToSectionInstruction(TypedDict):
+  op: Literal['section']
+  section: Sections
+  content: list[str]
+
+
+type Instruction = InsertInstruction | WriteToSectionInstruction
+
+def isInsertInstruction(i: Instruction) -> TypeGuard[InsertInstruction]:
+  return i['op'] is None
+
+def isWriteToSectionInstruction(i: Instruction) -> TypeGuard[WriteToSectionInstruction]:
+  return i['op'] == 'section'
+
+
 type InstructionList = list[Instruction]
+
 
 type ModuleExport = dict[str, Callable[[list[TypedArgument]], InstructionList]]
 

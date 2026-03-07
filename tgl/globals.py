@@ -1,7 +1,7 @@
 from uuid import uuid4
 from re import match
 
-from .errors import TGLIdentifierError, TGLSyntaxError
+from .errors import TGLSyntaxError
 from .types import GlobalOptions, GlobalRegs, REGS_SET_SYSCALL
 
 safeuuid = lambda: str(uuid4()).replace('-', '_')
@@ -29,9 +29,11 @@ class Global:
 
   @staticmethod
   def getGlobalIdFor(name: str):
-    if name in Global._UsedLabels: raise TGLIdentifierError(f'Duplicit identifier \'{name}\'', name)
-    Global._UsedLabels.append(name)
-    return Global._Prefix + name
+    isPresent = True
+    if not name in Global._UsedLabels:
+      Global._UsedLabels.append(name)
+      isPresent = False
+    return (Global._Prefix + name, isPresent)
 
   @staticmethod
   def getLocalIdFor(name: str):
@@ -39,7 +41,7 @@ class Global:
   
   @staticmethod
   def getRandId():
-    return Global.getGlobalIdFor(safeuuid())
+    return Global.getGlobalIdFor(safeuuid())[0]
   
   @staticmethod
   def getRandIdFor(name: str):
