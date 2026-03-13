@@ -16,6 +16,7 @@ def strlen(args: list[TypedArgument]) -> InstructionList:
   if not al: raise TGLNonexistentError(f'Tried to use lower 8bit register of {rax}, which does not exist.', '')
   wrap = saveRegs([rdi, rsi])
   funlabel, isPresent = Global.getGlobalIdFor('strlen')
+  funlabelfinish, _ = Global.getGlobalIdFor('strlen_finish')
   funBody: InstructionList = []
   if not isPresent:
     funBody = [
@@ -23,7 +24,15 @@ def strlen(args: list[TypedArgument]) -> InstructionList:
         'op': 'section',
         'section': '.text',
         'content': [
-          f'{funlabel}:'
+          f'{funlabel}:',
+          f'mov {al}, [{rdi}]',
+          f'test {al}, {al}',
+          f'jz {funlabelfinish}',
+          f'inc {rdi}',
+          f'jmp {funlabel}',
+          f'{funlabelfinish}:',
+          f'sub {rdi}, {rsi}',
+          f'mov {rax}, {rdi}'
         ]
       }
     ]
@@ -32,7 +41,8 @@ def strlen(args: list[TypedArgument]) -> InstructionList:
       'op': None,
       'content': [
         *wrap['before'],
-
+        f'lea {rsi}, [rel {args[0]}]',
+        f'mov {rdi}, {rsi}',
         *wrap['after']
       ]
     }
@@ -42,5 +52,5 @@ def strlen(args: list[TypedArgument]) -> InstructionList:
 
 
 FUNCTIONS: ModuleExport = {
-  
+  'strlen': strlen
 }
