@@ -95,6 +95,8 @@
     </li>
     </ul>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="std.html">std</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -134,10 +136,12 @@ tags: {List of tags}
 </code></pre>
 <h3 id="tags">Tags</h3>
 <p>Tags are used to convey some sort of information.</p>
-<p>The tags feature these:
- - <code>syscall</code> - this macro performs a syscall
- - <code>regs[rdi, rsi, ...]</code> - this tag marks the used registers
- - <code>ret[rax]</code> - this tag marks the registers used to return values from macro</p>
+<p>The tags feature these:</p>
+<ul>
+<li><code>syscall</code> - this macro performs a syscall</li>
+<li><code>regs[rdi, rsi, ...]</code> - this tag marks the used registers</li>
+<li><code>ret[rax]</code> - this tag marks the registers used to return values from macro</li>
+</ul>
 <h2 id="data-section">.data section</h2>
 <h2 id="defstr"><code>defstr</code></h2>
 <pre><code>defstr NAME, STR_VALUE
@@ -233,7 +237,7 @@ tags: regs[al, rdi, rsi, rdx]
 <h2 id="time"><code>time</code></h2>
 <pre><code>time
 
-tags: syscall, regs[rax, rdi]
+tags: syscall, regs[rax, rdi], ret[rax]
 </code></pre>
 <p>Get the current UNIX timestamp in the RAX register.</p>
 <p>Note: The value in RAX will be overwritten!</p>
@@ -242,6 +246,7 @@ tags: syscall, regs[rax, rdi]
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../cli.html" class="btn btn-neutral float-left" title="Command line tool"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="std.html" class="btn btn-neutral float-right" title="std">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -270,6 +275,8 @@ tags: syscall, regs[rax, rdi]
     
       <span><a href="../cli.html" style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="std.html" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

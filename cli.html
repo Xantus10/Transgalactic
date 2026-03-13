@@ -89,6 +89,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="modules/mc.html">mc</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="modules/std.html">std</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -135,11 +137,11 @@
 <p>The following options interact with Transgalactic on a prime level and may cause errors if mishandled.</p>
 <h3 id="regsiters-modification-options">Regsiters modification options</h3>
 <p>Transgalactic functions have to modify registers. In order to not break your program the registers are always saved using <code>push</code> and then restored using <code>pop</code>. This is so you don't have to juggle the values from the registers, however it creates some overhead (results in inefficient and ugly ASM). The following flags modify this behavior.</p>
-<p>Note: for functions that return a value, the ret register is not saved</p>
+<p>Note: for functions that return a value, the return register is not saved</p>
 <h4 id="-dont-save-regs"><code>--dont-save-regs</code></h4>
-<p>This flag will disable the flag saving for every macro except those marked by the syscall tag. (It is meant to be used in combination with <code>--work-regs-set</code>)</p>
+<p>This flag will disable the register saving for every macro except those marked by the <code>syscall</code> tag. (It is meant to be used in combination with <code>--work-regs-set</code>)</p>
 <h4 id="-work-regs-set-regs_set"><code>--work-regs-set REGS_SET</code></h4>
-<p>This option allows you to choose which registers will tgl operate on. It is recommended you choose a set of regs that you will not use and the combine with <code>--dont-save-regs</code>.</p>
+<p>This option allows you to choose which registers tgl will operate on. It is recommended you choose a set of registers that you will not use and then combine with <code>--dont-save-regs</code>.</p>
 <p>The values are as follows:</p>
 <ul>
 <li><code>SYSCALL</code> - <code>RAX, RDI, RSI, RDX</code> (default)</li>
@@ -148,7 +150,7 @@
 <li><code>REND</code> - <code>R12, R13, R14, R15</code></li>
 </ul>
 <h4 id="-dont-save-syscall"><code>--dont-save-syscall</code></h4>
-<p>This flag disables saving the registers for syscall tagged macros. In combination with <code>--dont-save-regs</code>, you essentially completely turn off all register saving procedures. This means that you yourself are responsible for maintaining the correct values in your program.</p>
+<p>This flag disables saving the registers for <code>syscall</code> tagged macros. In combination with <code>--dont-save-regs</code>, you essentially completely turn off all register saving procedures. This means that you yourself are responsible for maintaining the correct values in your program.</p>
 <p>If you choose to do so, then you might want to work in the R8-R15 register range for your tasks and not invade the syscall registers as much as possible.</p>
 <p>You can also choose to not save registers if your whole program uses Transgalactic (so you are not doing anything in raw ASM).</p>
 <h3 id="other-options">Other options</h3>
