@@ -20,6 +20,7 @@ tags: {List of tags}
 Tags are used to convey some sort of information.
 
 The tags feature these:
+
  - `syscall` - this macro performs a syscall
  - `regs[rdi, rsi, ...]` - this tag marks the used registers
  - `ret[rax]` - this tag marks the registers used to return values from macro
@@ -171,7 +172,7 @@ Note: **The FROM string must be NULL terminated**
 ```
 time
 
-tags: syscall, regs[rax, rdi]
+tags: syscall, regs[rax, rdi], ret[rax]
 ```
 
 Get the current UNIX timestamp in the RAX register.

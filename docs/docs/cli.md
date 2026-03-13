@@ -35,15 +35,15 @@ The following options interact with Transgalactic on a prime level and may cause
 
 Transgalactic functions have to modify registers. In order to not break your program the registers are always saved using `push` and then restored using `pop`. This is so you don't have to juggle the values from the registers, however it creates some overhead (results in inefficient and ugly ASM). The following flags modify this behavior.
 
-Note: for functions that return a value, the ret register is not saved
+Note: for functions that return a value, the return register is not saved
 
 #### `--dont-save-regs`
 
-This flag will disable the flag saving for every macro except those marked by the syscall tag. (It is meant to be used in combination with `--work-regs-set`)
+This flag will disable the register saving for every macro except those marked by the `syscall` tag. (It is meant to be used in combination with `--work-regs-set`)
 
 #### `--work-regs-set REGS_SET`
 
-This option allows you to choose which registers will tgl operate on. It is recommended you choose a set of regs that you will not use and the combine with `--dont-save-regs`.
+This option allows you to choose which registers tgl will operate on. It is recommended you choose a set of registers that you will not use and then combine with `--dont-save-regs`.
 
 The values are as follows:
 
@@ -54,7 +54,7 @@ The values are as follows:
 
 #### `--dont-save-syscall`
 
-This flag disables saving the registers for syscall tagged macros. In combination with `--dont-save-regs`, you essentially completely turn off all register saving procedures. This means that you yourself are responsible for maintaining the correct values in your program.
+This flag disables saving the registers for `syscall` tagged macros. In combination with `--dont-save-regs`, you essentially completely turn off all register saving procedures. This means that you yourself are responsible for maintaining the correct values in your program.
 
 If you choose to do so, then you might want to work in the R8-R15 register range for your tasks and not invade the syscall registers as much as possible.
 

@@ -32,7 +32,8 @@ def strlen(args: list[TypedArgument]) -> InstructionList:
           f'jmp {funlabel}',
           f'{funlabelfinish}:',
           f'sub {rdi}, {rsi}',
-          f'mov {rax}, {rdi}'
+          f'mov {rax}, {rdi}',
+          'ret'
         ]
       }
     ]
@@ -43,6 +44,7 @@ def strlen(args: list[TypedArgument]) -> InstructionList:
         *wrap['before'],
         f'lea {rsi}, [rel {args[0]}]',
         f'mov {rdi}, {rsi}',
+        f'call {funlabel}',
         *wrap['after']
       ]
     }
