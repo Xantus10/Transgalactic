@@ -2,10 +2,12 @@ from .errors import TGLIdentifierError
 from .types import InstructionList, ModuleTree, TGLLine
 
 from .modules.mc import FUNCTIONS as MC_FUNCTIONS
+from .modules.std import FUNCTIONS as STD_FUNCTIONS
 
 
 MODULE_TREE: ModuleTree = {
-  'mc': MC_FUNCTIONS
+  'mc': MC_FUNCTIONS,
+  'std': STD_FUNCTIONS
 }
 
 def interpret(parsed_line: TGLLine) -> InstructionList:
