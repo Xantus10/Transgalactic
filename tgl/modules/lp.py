@@ -23,7 +23,7 @@ def for_loop(args: list[TypedArgument]) -> InstructionList:
 
 def end_for_loop(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 0: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'endfor', 'expected': 0, 'got': len(args)}, str(args))
-  reg, label, change, final = Global.endLoop()
+  reg, label, final, change = Global.endLoop()
 
   jump_op = 'jl' if change > 0 else 'jg'
 
