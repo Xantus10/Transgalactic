@@ -21,7 +21,7 @@ def isArgString(a: TypedArgument) -> TypeGuard[TypedArgument_str]:
 def isArgInt(a: TypedArgument) -> TypeGuard[TypedArgument_int]:
   return a['argtype'] == 'int'
 
-type Modules = Literal['mc', 'std']
+type Modules = Literal['mc', 'std', 'lp']
 DEFINED_MODULES: tuple[Modules] = get_args(Modules.__value__)
 
 class TGLLine(TypedDict):
@@ -76,6 +76,9 @@ type Registers = Literal[
 ]
 
 REGISTER_LIST: tuple[Registers] = get_args(Registers.__value__)
+
+def isValueRegister(a: str) -> TypeGuard[Registers]:
+  return a in REGISTER_LIST
 
 type RegFamily = Literal['a', 'b', 'c', 'd', 'si', 'di', 'bp', 'sp', '8', '9', '10', '11', '12', '13', '14', '15', 'ip']
 

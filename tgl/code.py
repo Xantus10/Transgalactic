@@ -70,6 +70,7 @@ class Code:
           instructions = interpret(par)
           self.runInstructions(instructions)
         self.ix += 1
+    Global.checkFinalStatus()
 
 
   def runInstructions(self, instructions: InstructionList):

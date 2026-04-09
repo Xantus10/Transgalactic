@@ -79,3 +79,10 @@ class TGLNonexistentError(TGLError):
   """
   def __init__(self, msg: str, line: str) -> None:
     super().__init__(msg, line)
+
+class TGLLoopSyntaxError(TGLSyntaxError):
+  """
+  A syntax error related to loop structure
+  """
+  def __init__(self, msg: str, line: str) -> None:
+    super().__init__(msg, line)
