@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>std - Transgalactic</title>
+    <title>lp - Transgalactic</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "std";
-        var mkdocs_page_input_path = "modules\\std.md";
+        var mkdocs_page_name = "lp";
+        var mkdocs_page_input_path = "modules\\lp.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -55,19 +55,15 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="mc.html">mc</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">std</a>
+                  <li class="toctree-l1"><a class="reference internal" href="std.html">std</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">lp</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#format">Format</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#tags">Tags</a>
+    <li class="toctree-l2"><a class="reference internal" href="#about-loops">About loops</a>
     </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#strlen">strlen</a>
+    <li class="toctree-l2"><a class="reference internal" href="#for">for</a>
     </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="lp.html">lp</a>
                   </li>
               </ul>
       </div>
@@ -85,9 +81,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html" class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Modules</li>
-      <li class="breadcrumb-item active">std</li>
+      <li class="breadcrumb-item active">lp</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Xantus10/Transgalactic/edit/master/doc/docs/modules/std.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Xantus10/Transgalactic/edit/master/doc/docs/modules/lp.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -95,40 +91,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="std-standard-lib-functions"><code>std</code> - Standard lib functions</h1>
-<p>The <code>std</code> module features reusable functions which it defines at the beginning of your .text section as you would with any normal procedures.</p>
-<p>Here is the documentation for them</p>
-<h2 id="format">Format</h2>
-<p>Format is basically the same as with mc. These modules really differ just in the reusability of <code>std</code> functions.</p>
-<pre><code>{name_of_fun} ARG1, ARG2
-
-type ARG1 - First arg
-type ARG2 - Second arg
-
-tags: {List of tags}
+                <h1 id="lp-loops"><code>lp</code> - Loops</h1>
+<p>One feature noticably missing from ASM is a conditional loop. TGL provides this module with a few simple preset loops.</p>
+<p>Using loops will:</p>
+<ol>
+<li>Spare you the hassle of writing multiple insturctions just to get a loop going</li>
+<li>Result in more readable assembly</li>
+</ol>
+<h2 id="about-loops">About loops</h2>
+<p>Each loop has a starting tag where you define the loop and an ending tag to end it.</p>
+<p>E.g.</p>
+<pre><code>! lp for rax, 0, 10, 1
+  ; HERE LOOP BODY
+! lp endfor
 </code></pre>
-<h3 id="tags">Tags</h3>
-<p>Tags are used to convey some sort of information.</p>
-<p>The tags feature these:</p>
-<ul>
-<li><code>syscall</code> - this function performs a syscall</li>
-<li><code>regs[rdi, rsi, ...]</code> - this tag marks the used registers</li>
-<li><code>ret[rax]</code> - this tag marks the registers used to return values from macro</li>
-</ul>
-<h2 id="strlen"><code>strlen</code></h2>
-<pre><code>strlen NAME
+<p>The loop will require a register as a control variable. This register is not saved and it is assumed that you will choose a register you do not need to touch.</p>
+<p>Now the loops supported in <code>lp</code> module:</p>
+<h2 id="for"><code>for</code></h2>
+<pre><code>for REG, START, END, CHANGE
 
-label NAME - the name of a string label
-
-tags: regs[al, rdi, rsi], ret[rax]
+register REG - The control register for the loop
+int START - The initial value of the register (The lower end of the range)
+int END - The upper end of the range (Exclusive)
+int CHANGE - Some integer to add to the register
 </code></pre>
-<p>This function will output the length of a <strong>NULL terminated</strong> string on the address specified by <code>NAME</code> and save the len in the RAX register.</p>
+<p>A simple for loop. Syntax is similar to the standard for loop.</p>
+<p>The closing tag is <code>endfor</code></p>
+<p>Example usage:</p>
+<p><code>Echo numbers 5,4,3,2,1</code></p>
+<pre><code>! lp for r8, 5, 0, -1
+  ; Here echo the ASCII value
+! lp endfor
+</code></pre>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="mc.html" class="btn btn-neutral float-left" title="mc"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="lp.html" class="btn btn-neutral float-right" title="lp">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="std.html" class="btn btn-neutral float-left" title="std"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -155,10 +154,8 @@ tags: regs[al, rdi, rsi], ret[rax]
         </span>
     
     
-      <span><a href="mc.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="std.html" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="lp.html" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
