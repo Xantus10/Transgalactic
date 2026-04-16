@@ -63,6 +63,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#for">for</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#unt">unt</a>
+    </li>
     </ul>
                   </li>
               </ul>
@@ -122,6 +124,21 @@ int CHANGE - Some integer to add to the register
 <pre><code>! lp for r8, 5, 0, -1
   ; Here echo the ASCII value
 ! lp endfor
+</code></pre>
+<h2 id="unt"><code>unt</code></h2>
+<pre><code>unt REG, FINAL
+
+register REG - The control register for the loop
+int FINAL - Loop will continue until REG reaches FINAL value
+</code></pre>
+<p>A do..until loop. It will continue executing until <code>REG</code> is equal to the <code>FINAL</code> value.</p>
+<p>You are responsible for the necessary changes to <code>REG</code>.</p>
+<p>The closing tag is <code>endunt</code></p>
+<p>Example usage:</p>
+<p><code>Go through a NULL-terminated string until it reaches NULL</code></p>
+<pre><code>! unt r8b, 0
+  ; Load the character into r8b
+! endunt
 </code></pre>
               
             </div>

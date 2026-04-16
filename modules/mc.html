@@ -93,6 +93,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#time">time</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fopen">fopen</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="std.html">std</a>
@@ -243,6 +245,16 @@ tags: syscall, regs[rax, rdi], ret[rax]
 </code></pre>
 <p>Get the current UNIX timestamp in the RAX register.</p>
 <p>Note: The value in RAX will be overwritten!</p>
+<h2 id="fopen"><code>fopen</code></h2>
+<pre><code>fopen FILENAME, MODE
+
+string FILENAME - Filename/path to open
+label MODE - Filemode (accepts values R / W / RW)
+
+tags: syscall, regs[rax, rdi, rsi, rdx], ret[rax]
+</code></pre>
+<p>Open the specified file and return a file descriptor in RAX.</p>
+<p>Note: The mode is a literal value, not string (notice the absence of <code>""</code>): <code>! mc fopen "file.txt", RW</code></p>
               
             </div>
           </div><footer>
