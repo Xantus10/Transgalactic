@@ -16,6 +16,7 @@ class Global:
     'dont_save_syscall': False
   }
 
+  # Tuple is Register, LoopLabel, EndVal, Change
   _LoopQueue: list[tuple[Registers, str, int, int]] = []
 
   regs: GlobalRegs = REGS_SET_SYSCALL

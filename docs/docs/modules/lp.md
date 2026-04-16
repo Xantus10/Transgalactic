@@ -47,3 +47,28 @@ Example usage:
   ; Here echo the ASCII value
 ! lp endfor
 ```
+
+## `unt`
+
+```
+unt REG, FINAL
+
+register REG - The control register for the loop
+int FINAL - Loop will continue until REG reaches FINAL value
+```
+
+A do..until loop. It will continue executing until `REG` is equal to the `FINAL` value.
+
+You are responsible for the necessary changes to `REG`.
+
+The closing tag is `endunt`
+
+Example usage:
+
+`Go through a NULL-terminated string until it reaches NULL`
+
+```
+! unt r8b, 0
+  ; Load the character into r8b
+! endunt
+```
