@@ -1,7 +1,7 @@
 from ..errors import TGLArgumentError, TGLNonexistentError
 from ..globals import Global
 from ..parse import checkArgTypes, strparse
-from ..types import InstructionList, ModuleExport, TypedArgument, isArgString, isArgInt
+from ..types import InstructionList, ModuleExport, TypedArgument, isArgString, isArgInt, filemode_convert, isFilemode
 
 from .savestate import saveRegs, saveSyscallArgs
 
@@ -212,6 +212,35 @@ def time(args: list[TypedArgument]) -> InstructionList:
   ]
 
 
+def fopen(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 0: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'fopen', 'expected': 2, 'got': len(args)}, str(args))
+  if not checkArgTypes(args, ['string', 'label']) or not isArgString(args[0]) or not isArgString(args[1]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'fopen', 'expected': ('string', 'label'), 'got': (args[0]['argtype'],args[1]['argtype'])}, str(args))
+  if not isFilemode(args[1]['value']): raise TGLNonexistentError(f'Nonexistent filemode: {args[1]["value"]}', str(args))
+  rdisave = saveSyscallArgs('rax')
+  filename, _ = Global.getRandIdFor('filename')
+  return [
+    {
+      'op': 'section',
+      'section': '.rodata',
+      'content': [
+        f'! mc defstr {filename}, {args[0]["value"]}'
+      ]
+    },
+    {
+      'op': None,
+      'content': [
+        *rdisave['before'],
+        'mov rax, 2',
+        f'lea rdi, [rel {filename}]',
+        f'mov rsi, {filemode_convert(args[1]["value"])}',
+        'xor rdx, rdx',
+        'syscall',
+        *rdisave['after']
+      ]
+    }
+  ]
+
+
 
 
 # Export
@@ -223,5 +252,7 @@ FUNCTIONS: ModuleExport = {
   'inpdef': inpdef,
   'inp': inp,
   'strcp': strcp,
-  'strncp': strncp
+  'strncp': strncp,
+  'time': time,
+  'fopen': fopen
 }

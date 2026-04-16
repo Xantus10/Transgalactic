@@ -280,3 +280,8 @@ FILE_MODES_STR = get_args(FileModeStr.__value__)
 type FileModeInt = Literal[0, 1, 2]
 FILE_MODES_INT = get_args(FileModeInt.__value__)
 
+def isFilemode(s: str) -> TypeGuard[FileModeStr]:
+  return s in FILE_MODES_STR
+
+def filemode_convert(str_mode: FileModeStr) -> FileModeInt:
+  return FILE_MODES_INT[FILE_MODES_STR.index(str_mode)]

@@ -178,3 +178,18 @@ tags: syscall, regs[rax, rdi], ret[rax]
 Get the current UNIX timestamp in the RAX register.
 
 Note: The value in RAX will be overwritten!
+
+## `fopen`
+
+```
+fopen FILENAME, MODE
+
+string FILENAME - Filename/path to open
+label MODE - Filemode (accepts values R / W / RW)
+
+tags: syscall, regs[rax, rdi, rsi, rdx], ret[rax]
+```
+
+Open the specified file and return a file descriptor in RAX.
+
+Note: The mode is a literal value, not string (notice the absence of `""`): `! mc fopen "file.txt", RW`
