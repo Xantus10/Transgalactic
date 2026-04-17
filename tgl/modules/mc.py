@@ -271,6 +271,7 @@ FUNCTIONS: ModuleExport = {
   'resstr': resstr,
   'printdef': printdef,
   'exit': mcexit,
+  'print': mcprint,
   'inpdef': inpdef,
   'inp': inp,
   'strcp': strcp,
