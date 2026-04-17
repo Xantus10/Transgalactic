@@ -45,10 +45,10 @@ def printdef_defined(args: list[TypedArgument]) -> InstructionList:
       'op': None,
       'content': [
         *wrap['before'],
-        'mov rax 1',
-        'mov rdi 1',
-        f'lea rsi [rel {args[0]["value"]}]',
-        f'mov rdx {args[0]["value"]}_len',
+        'mov rax, 1',
+        'mov rdi, 1',
+        f'lea rsi, [rel {args[0]["value"]}]',
+        f'mov rdx, {args[0]["value"]}_len',
         'syscall',
         *wrap['after']
       ]
