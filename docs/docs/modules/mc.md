@@ -111,6 +111,18 @@ tags: syscall, regs[rax, rdi]
 
 Make a syscall to SYS_EXIT with the corresponding return code.
 
+## `print`
+
+```
+print NAME
+
+label NAME - Label pointing to a NULL terminated string
+
+tags: syscall, regs[rax, rdi, rsi, rdx], uses[std strlen]
+```
+
+Print a dynamic string. This function dynamically determines the length using the `std strlen` function (The string needs to be NULL terminated).
+
 ## `inpdef`
 
 ```
@@ -122,7 +134,7 @@ int SIZE - size to reserve and input (in bytes)
 tags: syscall, regs[rax, rdi, rsi, rdx]
 ```
 
-This macro defines a `.bss` variable with the label `NAME` and defines the asm constant `NAME_len` with the value of `SIZE`. Then calls the stdin syscall.
+This macro defines a `.bss` variable with the label `NAME` and defines the asm constant `NAME_len` with the value of `SIZE`. Then calls the stdin syscall and appends a NULL byte at the end.
 
 ## `inp`
 
@@ -134,7 +146,7 @@ label NAME - the name of the bss variable
 tags: syscall, regs[rax, rdi, rsi, rdx]
 ```
 
-This macro assumes the existence of the `.bss` variable `NAME` and the asm constant `NAME_len`. Then calls the stdin syscall.
+This macro assumes the existence of the `.bss` variable `NAME` and the asm constant `NAME_len`. Then calls the stdin syscall and appends a NULL byte at the end.
 
 ## `strcp`
 

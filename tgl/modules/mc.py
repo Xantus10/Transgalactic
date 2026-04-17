@@ -98,6 +98,27 @@ def mcexit(args: list[TypedArgument]) -> InstructionList:
   ]
 
 
+def mcprint(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'print', 'expected': 1, 'got': len(args)}, str(args))
+  if not args[0]['argtype'] == 'label': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'print', 'expected': ('label',), 'got': (args[0]['argtype'],)}, str(args))
+  wrap = saveSyscallArgs()
+  return [
+    {
+      'op': None,
+      'content': [
+        *wrap['before'],
+        f'! std strlen {args[0]["value"]}',
+        'mov rdx, rax',
+        'mov rax, 1',
+        'mov rdi, 1',
+        f'lea rsi, [rel {args[0]["value"]}]',
+        'syscall',
+        *wrap['after']
+      ]
+    }
+  ]
+
+
 def inp(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'inp', 'expected': 1, 'got': len(args)}, str(args))
   if args[0]['argtype'] != 'label': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'inp', 'expected': ('label',), 'got': (args[0]['argtype'],)}, str(args))
@@ -112,6 +133,7 @@ def inp(args: list[TypedArgument]) -> InstructionList:
         f'lea rsi, [rel {args[0]["value"]}]',
         f'mov rdx, {args[0]["value"]}_len',
         'syscall',
+        f'mov byte [{args[0]["value"]} + rax], 0',
         *wrap['after']
       ]
     }
