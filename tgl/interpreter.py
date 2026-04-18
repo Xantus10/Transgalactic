@@ -3,11 +3,13 @@ from .types import InstructionList, ModuleTree, TGLLine
 
 from .modules.mc import FUNCTIONS as MC_FUNCTIONS
 from .modules.std import FUNCTIONS as STD_FUNCTIONS
+from .modules.lp import FUNCTIONS as LP_FUNCTIONS
 
 
 MODULE_TREE: ModuleTree = {
   'mc': MC_FUNCTIONS,
-  'std': STD_FUNCTIONS
+  'std': STD_FUNCTIONS,
+  'lp': LP_FUNCTIONS
 }
 
 def interpret(parsed_line: TGLLine) -> InstructionList:
