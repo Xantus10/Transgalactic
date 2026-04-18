@@ -1,6 +1,6 @@
 from ..errors import TGLArgumentError, TGLNonexistentError
 from ..globals import Global
-from ..parse import checkArgTypes, strparse
+from ..parse import checkArgTypes, strparse, toNASMByteSequence
 from ..types import InstructionList, ModuleExport, TypedArgument, isArgString, isArgInt, filemode_convert, isFilemode
 
 from .savestate import saveRegs, saveSyscallArgs
@@ -15,7 +15,7 @@ def defstr(args: list[TypedArgument]) -> InstructionList:
       'op': None,
       'content': [
         f'{args[0]["value"]}_len equ {len(strparse(args[1]["value"]))}',
-        f'{args[0]["value"]}: db {args[1]["value"]}'
+        f'{args[0]["value"]}: db {toNASMByteSequence(args[1]["value"])}'
       ]
     }
   ]
