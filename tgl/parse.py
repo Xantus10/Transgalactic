@@ -17,6 +17,7 @@ def argparse(s: str) -> list[RawArgument]:
 def strparse(s: str) -> str:
   assert s[0] in ['"', "'"]
   assert s[-1] in ['"', "'"]
+  assert s[0] == s[-1]
   i = 1
   parsed = ""
   while i < (len(s)-1):
@@ -24,15 +25,7 @@ def strparse(s: str) -> str:
     if c == '\\':
       i += 1
       c = s[i]
-      if c.isdigit():
-        num = ''
-        while c.isdigit():
-          num += c
-          i += 1
-          c = s[i]
-        i -= 1
-        parsed += chr(int(num))
-      elif c == 'n':
+      if c == 'n':
         parsed += '\n'
       elif c == 'a':
         parsed += '\a'
@@ -46,8 +39,68 @@ def strparse(s: str) -> str:
         parsed += '\t'
       elif c == 'v':
         parsed += '\v'
+      elif c in '0123456789abcdefABCDEFx':
+        num = ''
+        base = 10
+        if c == 'x':
+          base = 16
+          i += 1
+          c = s[i]
+        while c in '0123456789abcdefABCDEF':
+          num += c
+          i += 1
+          c = s[i]
+        i -= 1
+        parsed += chr(int(num, base))
       else:
         parsed += c
+    else:
+      parsed += c
+    i += 1
+  return parsed
+
+def toNASMByteSequence(s: str):
+  assert s[0] in ['"', "'"]
+  assert s[-1] in ['"', "'"]
+  assert s[0] == s[-1]
+  i = 0
+  parsed = ''
+  while i < len(s):
+    c = s[i]
+    if c == '\\':
+      parsed += '",'
+      i += 1
+      c = s[i]
+      if c == 'n':
+        parsed += str(ord('\n'))
+      elif c == 'a':
+        parsed += str(ord('\a'))
+      elif c == 'b':
+        parsed += str(ord('\b'))
+      elif c == 'f':
+        parsed += str(ord('\f'))
+      elif c == 'r':
+        parsed += str(ord('\r'))
+      elif c == 't':
+        parsed += str(ord('\t'))
+      elif c == 'v':
+        parsed += str(ord('\v'))
+      elif c in '0123456789abcdefABCDEFx':
+        num = ''
+        base = 10
+        if c == 'x':
+          base = 16
+          i += 1
+          c = s[i]
+        while c in '0123456789abcdefABCDEF':
+          num += c
+          i += 1
+          c = s[i]
+        i -= 1
+        parsed += str(int(num, base))
+      else:
+        parsed += c
+      parsed += ',"'
     else:
       parsed += c
     i += 1
