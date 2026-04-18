@@ -48,6 +48,8 @@ Example usage:
 ! lp endfor
 ```
 
+Note: This behaves as a do..for loop, meaning that the body will run at least once. Since this loop only accepts `int` from user, it is expected for the user to enter standard input, not use something like `for r8, 0, 0, 1`.
+
 ## `unt`
 
 ```
@@ -57,7 +59,7 @@ register REG - The control register for the loop
 int FINAL - Loop will continue until REG reaches FINAL value
 ```
 
-A do..until loop. It will continue executing until `REG` is equal to the `FINAL` value.
+A do..until loop, meaning the body will run at least once. It will continue executing until `REG` is equal to the `FINAL` value.
 
 You are responsible for the necessary changes to `REG`.
 
