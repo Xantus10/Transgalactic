@@ -83,6 +83,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#exit">exit</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#print">print</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#inpdef">inpdef</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#inp">inp</a>
@@ -200,6 +202,14 @@ int CODE - Exit code of the program
 tags: syscall, regs[rax, rdi]
 </code></pre>
 <p>Make a syscall to SYS_EXIT with the corresponding return code.</p>
+<h2 id="print"><code>print</code></h2>
+<pre><code>print NAME
+
+label NAME - Label pointing to a NULL terminated string
+
+tags: syscall, regs[rax, rdi, rsi, rdx], uses[std strlen]
+</code></pre>
+<p>Print a dynamic string. This function dynamically determines the length using the <code>std strlen</code> function (The string needs to be NULL terminated).</p>
 <h2 id="inpdef"><code>inpdef</code></h2>
 <pre><code>inpdef NAME, SIZE
 
@@ -208,7 +218,7 @@ int SIZE - size to reserve and input (in bytes)
 
 tags: syscall, regs[rax, rdi, rsi, rdx]
 </code></pre>
-<p>This macro defines a <code>.bss</code> variable with the label <code>NAME</code> and defines the asm constant <code>NAME_len</code> with the value of <code>SIZE</code>. Then calls the stdin syscall.</p>
+<p>This macro defines a <code>.bss</code> variable with the label <code>NAME</code> and defines the asm constant <code>NAME_len</code> with the value of <code>SIZE</code>. Then calls the stdin syscall and appends a NULL byte at the end.</p>
 <h2 id="inp"><code>inp</code></h2>
 <pre><code>inp NAME
 
@@ -216,7 +226,7 @@ label NAME - the name of the bss variable
 
 tags: syscall, regs[rax, rdi, rsi, rdx]
 </code></pre>
-<p>This macro assumes the existence of the <code>.bss</code> variable <code>NAME</code> and the asm constant <code>NAME_len</code>. Then calls the stdin syscall.</p>
+<p>This macro assumes the existence of the <code>.bss</code> variable <code>NAME</code> and the asm constant <code>NAME_len</code>. Then calls the stdin syscall and appends a NULL byte at the end.</p>
 <h2 id="strcp"><code>strcp</code></h2>
 <pre><code>strcp FROM, TO
 

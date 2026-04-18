@@ -125,13 +125,14 @@ int CHANGE - Some integer to add to the register
   ; Here echo the ASCII value
 ! lp endfor
 </code></pre>
+<p>Note: This behaves as a do..for loop, meaning that the body will run at least once. Since this loop only accepts <code>int</code> from user, it is expected for the user to enter standard input, not use something like <code>for r8, 0, 0, 1</code>.</p>
 <h2 id="unt"><code>unt</code></h2>
 <pre><code>unt REG, FINAL
 
 register REG - The control register for the loop
 int FINAL - Loop will continue until REG reaches FINAL value
 </code></pre>
-<p>A do..until loop. It will continue executing until <code>REG</code> is equal to the <code>FINAL</code> value.</p>
+<p>A do..until loop, meaning the body will run at least once. It will continue executing until <code>REG</code> is equal to the <code>FINAL</code> value.</p>
 <p>You are responsible for the necessary changes to <code>REG</code>.</p>
 <p>The closing tag is <code>endunt</code></p>
 <p>Example usage:</p>
