@@ -22,7 +22,7 @@ Tags are used to convey some sort of information.
 The tags feature these:
 
  - `syscall` - this macro performs a syscall
- - `regs[rdi, rsi, ...]` - this tag marks the used registers
+ - `regs[rdi, rsi, ...]` - this tag marks the used registers (`wr1/2/3/4` marks a dynamic register you define with `--work-regs-set`)
  - `ret[rax]` - this tag marks the registers used to return values from macro
 
 
@@ -156,7 +156,7 @@ strcp FROM, TO
 label FROM - the source string
 label TO - the destination string
 
-tags: regs[al, rdi, rsi]
+tags: regs[wr1, wr2, wr3]
 ```
 
 This macro will copy the contents of the `FROM` string into the `TO` string.
@@ -172,7 +172,7 @@ label FROM - the source string
 label TO - the destination string
 int LEN - max characters to copy
 
-tags: regs[al, rdi, rsi, rdx]
+tags: regs[wr1, wr2, wr3, wr4]
 ```
 
 This macro will copy the contents of the `FROM` string into the `TO` string. It can also safeguard agains overflow with the LEN parameter.
