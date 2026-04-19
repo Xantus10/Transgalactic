@@ -48,7 +48,7 @@ printint VALUE
 
 int/register VALUE - the integer value you want to print (literal int or dynamic in register)
 
-tags: regs[wr1, wr2, wr3, wr4, wr5, rax, rdx]
+tags: syscall, regs[wr1, wr2, wr3, wr4, rax, rcx, rdx]
 ```
 
 Print an integer value. This function will convert the number to a string and then print it.
