@@ -145,7 +145,7 @@ tags: {List of tags}
 <p>The tags feature these:</p>
 <ul>
 <li><code>syscall</code> - this macro performs a syscall</li>
-<li><code>regs[rdi, rsi, ...]</code> - this tag marks the used registers</li>
+<li><code>regs[rdi, rsi, ...]</code> - this tag marks the used registers (<code>wr1/2/3/4</code> marks a dynamic register you define with <code>--work-regs-set</code>)</li>
 <li><code>ret[rax]</code> - this tag marks the registers used to return values from macro</li>
 </ul>
 <h2 id="data-section">.data section</h2>
@@ -233,7 +233,7 @@ tags: syscall, regs[rax, rdi, rsi, rdx]
 label FROM - the source string
 label TO - the destination string
 
-tags: regs[al, rdi, rsi]
+tags: regs[wr1, wr2, wr3]
 </code></pre>
 <p>This macro will copy the contents of the <code>FROM</code> string into the <code>TO</code> string.</p>
 <p>Note: <strong>The FROM string must be NULL terminated</strong></p>
@@ -244,7 +244,7 @@ label FROM - the source string
 label TO - the destination string
 int LEN - max characters to copy
 
-tags: regs[al, rdi, rsi, rdx]
+tags: regs[wr1, wr2, wr3, wr4]
 </code></pre>
 <p>This macro will copy the contents of the <code>FROM</code> string into the <code>TO</code> string. It can also safeguard agains overflow with the LEN parameter.</p>
 <p>Note: <strong>The FROM string must be NULL terminated</strong></p>

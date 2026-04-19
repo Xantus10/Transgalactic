@@ -65,6 +65,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#strlen">strlen</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#printint">printint</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="lp.html">lp</a>
@@ -112,7 +114,7 @@ tags: {List of tags}
 <p>The tags feature these:</p>
 <ul>
 <li><code>syscall</code> - this function performs a syscall</li>
-<li><code>regs[rdi, rsi, ...]</code> - this tag marks the used registers</li>
+<li><code>regs[rdi, rsi, ...]</code> - this tag marks the used registers (<code>wr1/2/3/4</code> marks a dynamic register you define with <code>--work-regs-set</code>)</li>
 <li><code>ret[rax]</code> - this tag marks the registers used to return values from macro</li>
 </ul>
 <h2 id="strlen"><code>strlen</code></h2>
@@ -120,9 +122,17 @@ tags: {List of tags}
 
 label NAME - the name of a string label
 
-tags: regs[al, rdi, rsi], ret[rax]
+tags: regs[wr1, wr2, wr3], ret[rax]
 </code></pre>
 <p>This function will output the length of a <strong>NULL terminated</strong> string on the address specified by <code>NAME</code> and save the len in the RAX register.</p>
+<h2 id="printint"><code>printint</code></h2>
+<pre><code>printint VALUE
+
+int/register VALUE - the integer value you want to print (literal int or dynamic in register)
+
+tags: regs[wr1, wr2, wr3, wr4, wr5, rax, rdx]
+</code></pre>
+<p>Print an integer value. This function will convert the number to a string and then print it.</p>
               
             </div>
           </div><footer>
