@@ -3,7 +3,7 @@ import argparse
 from .code import Code
 from .errors import TGLError
 from .globals import Global
-from .types import REGS_SET_SYSCALL, REGS_SET_ALPH, REGS_SET_RSTART, REGS_SET_REND
+from .types import REGS_SET_SYSCALL, REGS_SET_RSTART, REGS_SET_REND
 
 def createParser() -> argparse.ArgumentParser:
   parser = argparse.ArgumentParser(
@@ -40,7 +40,7 @@ def createParser() -> argparse.ArgumentParser:
   advanced.add_argument(
     '--work-regs-set',
     dest='regs_set',
-    choices=['SYSCALL', 'ALPH', 'RSTART', 'REND'],
+    choices=['SYSCALL', 'RSTART', 'REND'],
     help='The registers set macros will operate on'
   )
 
@@ -69,8 +69,6 @@ def main():
     match args.regs_set:
       case 'SYSCALL':
         Global.regs = REGS_SET_SYSCALL
-      case 'ALPH':
-        Global.regs = REGS_SET_ALPH
       case 'RSTART':
         Global.regs = REGS_SET_RSTART
       case 'REND':

@@ -48,7 +48,6 @@ This option allows you to choose which registers tgl will operate on. It is reco
 The values are as follows:
 
  - `SYSCALL` - `RAX, RDI, RSI, RDX` (default)
- - `ALPH` - `RAX, RBX, RCX, RDX`
  - `RSTART` - `R8, R9, R10, R11`
  - `REND` - `R12, R13, R14, R15`
 
