@@ -12,6 +12,7 @@ def argparse(s: str) -> list[RawArgument]:
   lex.whitespace_split = False
   lex.escape = '\\'
   lex.commenters = ';'
+  lex.wordchars += '+-'
   return [arg.strip() for arg in lex]
 
 def strparse(s: str) -> str:
