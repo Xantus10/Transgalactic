@@ -70,7 +70,9 @@ Example usage:
 `Go through a NULL-terminated string until it reaches NULL`
 
 ```
+; Load the address
 ! unt r8b, 0
   ; Load the character into r8b
+  ; Increment the address
 ! endunt
 ```
