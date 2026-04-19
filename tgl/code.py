@@ -48,6 +48,7 @@ class Code:
       if DEFINED_SECTIONS[nextSectionIx] in self.sections.keys():
         placeIndex = self.sections[DEFINED_SECTIONS[nextSectionIx]]
         break
+      nextSectionIx += 1
     self.writeToIx(placeIndex, [f'section {section}'])
     self.sections[section] = placeIndex
 
