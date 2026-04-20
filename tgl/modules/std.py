@@ -3,7 +3,7 @@ from ..globals import Global
 from ..parse import checkArgTypes
 from ..types import InstructionList, ModuleExport, TypedArgument
 
-from .savestate import saveRegs, saveSyscallArgs
+from .savestate import saveRegsFunction, saveSyscallArgs
 
 
 def strlen(args: list[TypedArgument]) -> InstructionList:
@@ -14,7 +14,7 @@ def strlen(args: list[TypedArgument]) -> InstructionList:
   rdi = Global.regs['r2']['b64']
   rsi = Global.regs['r3']['b64']
   if not al: raise TGLNonexistentError(f'Tried to use lower 8bit register of {rax}, which does not exist.', '')
-  wrap = saveRegs([rdi, rsi])
+  wrap = saveRegsFunction([rdi, rsi])
   funlabel, isPresent = Global.getGlobalIdFor('strlen')
   funlabelfinish, _ = Global.getGlobalIdFor('strlen_finish')
   funBody: InstructionList = []
@@ -59,7 +59,7 @@ def str_to_int_conversion() -> InstructionList:
   rsi = Global.regs['r3']['b64']
   sil = Global.regs['r3']['b8']
   if not sil: raise TGLNonexistentError(f'Tried to use lower 8bit register of {rsi}, which does not exist.', '')
-  wrap = saveRegs(['rdx', rsi, 'rcx'])
+  wrap = saveRegsFunction(['rdx', rsi, 'rcx'])
   funlabel, isPresent = Global.getGlobalIdFor('strtoint_conversion')
   if isPresent: return []
   bufferlabel, _ = Global.getGlobalIdFor('strtoint_buffer')
@@ -123,7 +123,7 @@ def printint(args: list[TypedArgument]) -> InstructionList:
   funlabel, _ = Global.getGlobalIdFor('strtoint_conversion')
   bufferlabel, _ = Global.getGlobalIdFor('strtoint_buffer')
   rdi = Global.regs['r2']['b64']
-  wrap = saveRegs([rdi])
+  wrap = saveRegsFunction([rdi])
   syscallWrap = saveSyscallArgs()
   return [
     *str_int_conv_definition,

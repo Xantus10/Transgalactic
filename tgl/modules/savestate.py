@@ -16,6 +16,10 @@ def _saveRegs(registers: list[Registers]) -> CodeWrapper:
   }
 
 
+def saveRegsFunction(registers: list[Registers]):
+  return _saveRegs(registers)
+
+
 def saveRegs(registers: list[Registers]):
   if Global.options['dont_save_regs']:
     return _saveRegs([])
