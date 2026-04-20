@@ -239,15 +239,16 @@ def time(args: list[TypedArgument]) -> InstructionList:
 
 def fopen(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'fopen', 'expected': 2, 'got': len(args)}, str(args))
-  if not checkArgTypes(args, ['string', 'label']) or not isArgString(args[0]) or not isArgString(args[1]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'fopen', 'expected': ('string', 'label'), 'got': (args[0]['argtype'],args[1]['argtype'])}, str(args))
+  if not checkArgTypes(args, ['string', 'label']) or not isArgString(args[0]) or not isArgString(args[1]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'fopen', 'expected': ('string', 'label'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
   if not isFilemode(args[1]['value']): raise TGLNonexistentError(f'Nonexistent filemode: {args[1]["value"]}', str(args))
-  rdisave = saveSyscallArgs('rax')
+  wrap = saveSyscallArgs('rax')
   filename, isDefined = Global.getRandIdStr(args[0]['value'])
+  null_term = '\\0'+args[0]["value"][-1] if strparse(args[0]['value'])[-1] != '\0' else args[0]["value"][-1]
   defineInstruction: InstructionList = [] if isDefined else [{
       'op': 'section',
       'section': '.rodata',
       'content': [
-        f'! mc defstr {filename}, {args[0]["value"]}'
+        f'! mc defstr {filename}, {args[0]["value"][:-1]+null_term}'
       ]
     }]
   return [
@@ -255,17 +256,61 @@ def fopen(args: list[TypedArgument]) -> InstructionList:
     {
       'op': None,
       'content': [
-        *rdisave['before'],
+        *wrap['before'],
         'mov rax, 2',
         f'lea rdi, [rel {filename}]',
         f'mov rsi, {filemode_convert(args[1]["value"])}',
         'xor rdx, rdx',
         'syscall',
-        *rdisave['after']
+        *wrap['after']
       ]
     }
   ]
 
+def fwrite_defined(args: list[TypedArgument]) -> InstructionList:
+  wrap = saveSyscallArgs()
+  length = ''
+  strlen_snippet = []
+  if len(args) == 3:
+    length = args[2]['value']
+  else:
+    length = 'rax'
+    strlen_snippet = [
+      f'! std strlen {args[1]["value"]}'
+    ]
+  return [
+    {
+      'op': None,
+      'content': [
+        *wrap['before'],
+        f'mov rdi, {args[0]["value"]}',
+        *strlen_snippet,
+        f'mov rdx, {length}',
+        'mov rax, 1',
+        f'lea rsi, [rel {args[1]["value"]}]',
+        'syscall',
+        *wrap['after']
+      ]
+    }
+  ]
+
+def fwrite(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'fwrite', 'expected': 2, 'got': len(args)}, str(args))
+  if not args[0]['argtype'] == 'register' or not isArgString(args[0]): raise TGLArgumentError(f'Invalid argument type for \'fwrite\' first argument (expected: (register), got: {args[0]})', str(args))
+  if not isArgString(args[1]): raise TGLArgumentError(f'Invalid argument type for \'fwrite\' second argument (expected: (label OR string), got: {args[1]})', str(args))
+  str_label, isDefined = Global.getRandIdStr(args[1]['value'])
+  if args[1]['argtype'] == 'label':
+    return fwrite_defined(args)
+  elif args[1]['argtype'] == 'string':
+    defineInstruction: InstructionList = [] if isDefined else [{
+      'op': 'section',
+      'section': '.rodata',
+      'content': [
+        f'! mc defstr {str_label}, {args[1]["value"]}'
+      ]
+    }]
+    return defineInstruction + fwrite_defined([args[0], {'argtype': 'label', 'value': str_label}, {'argtype': 'label', 'value': f'{str_label}_len'}])
+  raise TGLArgumentError(f'Invalid argument type for \'fwrite\' second argument (expected: (label OR string), got: {args[1]})', str(args))
 
 
 
@@ -281,5 +326,6 @@ FUNCTIONS: ModuleExport = {
   'strcp': strcp,
   'strncp': strncp,
   'time': time,
-  'fopen': fopen
+  'fopen': fopen,
+  'fwrite': fwrite
 }
