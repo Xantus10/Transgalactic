@@ -19,6 +19,9 @@ class Global:
   # Tuple is Register, LoopLabel, EndVal, Change
   _LoopQueue: list[tuple[Registers, str, int, int]] = []
 
+  # Dictionary of defined values - their assigned labels (To avoid redefining)
+  _DefinedValues: dict[str, str] = {}
+
   regs: GlobalRegs = REGS_SET_SYSCALL
 
   @staticmethod
@@ -49,6 +52,13 @@ class Global:
   @staticmethod
   def getRandIdFor(name: str):
     return Global.getRandId() + '_' + name
+
+  @staticmethod
+  def getRandIdStr(refValue: str):
+    if refValue in Global._DefinedValues.keys(): return Global._DefinedValues[refValue], True
+    randid = Global.getRandId()
+    Global._DefinedValues[refValue] = randid
+    return randid, False
   
   @staticmethod
   def newLoop(args: tuple[Registers, str, int, int]):

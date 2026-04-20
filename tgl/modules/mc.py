@@ -67,7 +67,10 @@ def printdef_defname(args: list[TypedArgument]) -> InstructionList:
   ]
 
 def printdef_rand(args: list[TypedArgument]) -> InstructionList:
-  strid = Global.getRandId()
+  if not isArgString(args[0]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'printdef', 'expected': ('string',), 'got': (args[0]['argtype'],)}, str(args))
+  strid, isDefined = Global.getRandIdStr(args[0]['value'])
+  if isDefined:
+    return printdef_defined([{'argtype': 'label', 'value': strid}])
   return printdef_defname([{'argtype': 'label', 'value': strid}, args[0]])
 
 def printdef(args: list[TypedArgument]) -> InstructionList:
@@ -235,19 +238,20 @@ def time(args: list[TypedArgument]) -> InstructionList:
 
 
 def fopen(args: list[TypedArgument]) -> InstructionList:
-  if len(args) != 0: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'fopen', 'expected': 2, 'got': len(args)}, str(args))
+  if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'fopen', 'expected': 2, 'got': len(args)}, str(args))
   if not checkArgTypes(args, ['string', 'label']) or not isArgString(args[0]) or not isArgString(args[1]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'fopen', 'expected': ('string', 'label'), 'got': (args[0]['argtype'],args[1]['argtype'])}, str(args))
   if not isFilemode(args[1]['value']): raise TGLNonexistentError(f'Nonexistent filemode: {args[1]["value"]}', str(args))
   rdisave = saveSyscallArgs('rax')
-  filename, _ = Global.getRandIdFor('filename')
-  return [
-    {
+  filename, isDefined = Global.getRandIdStr(args[0]['value'])
+  defineInstruction: InstructionList = [] if isDefined else [{
       'op': 'section',
       'section': '.rodata',
       'content': [
         f'! mc defstr {filename}, {args[0]["value"]}'
       ]
-    },
+    }]
+  return [
+    *defineInstruction,
     {
       'op': None,
       'content': [
