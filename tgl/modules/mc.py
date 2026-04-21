@@ -121,6 +121,30 @@ def mcprint(args: list[TypedArgument]) -> InstructionList:
     }
   ]
 
+def mcprintln(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'println', 'expected': 1, 'got': len(args)}, str(args))
+  if not args[0]['argtype'] == 'label': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'println', 'expected': ('label',), 'got': (args[0]['argtype'],)}, str(args))
+  wrap = saveSyscallArgs()
+  return [
+    {
+      'op': None,
+      'content': [
+        *wrap['before'],
+        f'! std strlen {args[0]["value"]}',
+        'mov rdx, rax',
+        'mov rax, 1',
+        'mov rdi, 1',
+        f'lea rsi, [rel {args[0]["value"]}]',
+        'mov byte [rsi + rdx], 10',
+        'inc rdx',
+        'syscall',
+        'dec rdx',
+        'mov byte [rsi + rdx], 0',
+        *wrap['after']
+      ]
+    }
+  ]
+
 
 def inp(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'inp', 'expected': 1, 'got': len(args)}, str(args))
@@ -369,6 +393,7 @@ FUNCTIONS: ModuleExport = {
   'printdef': printdef,
   'exit': mcexit,
   'print': mcprint,
+  'println': mcprintln,
   'inpdef': inpdef,
   'inp': inp,
   'strcp': strcp,

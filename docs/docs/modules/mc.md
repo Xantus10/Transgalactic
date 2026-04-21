@@ -123,6 +123,18 @@ tags: syscall, regs[rax, rdi, rsi, rdx], uses[std strlen]
 
 Print a dynamic string. This function dynamically determines the length using the `std strlen` function (The string needs to be NULL terminated).
 
+## `println`
+
+```
+println NAME
+
+label NAME - Label pointing to a NULL terminated string
+
+tags: syscall, regs[rax, rdi, rsi, rdx], uses[std strlen]
+```
+
+Print a dynamic string. This function dynamically determines the length using the `std strlen` function (The string needs to be NULL terminated). This function automatically appends a `\n` at the end of the string. (The original string is not changed)
+
 ## `inpdef`
 
 ```
