@@ -134,7 +134,7 @@ int SIZE - size to reserve and input (in bytes)
 tags: syscall, regs[rax, rdi, rsi, rdx]
 ```
 
-This macro defines a `.bss` variable with the label `NAME` and defines the asm constant `NAME_len` with the value of `SIZE`. Then calls the stdin syscall and appends a NULL byte at the end.
+This macro defines a `.bss` variable with the label `NAME` and defines the asm constant `NAME_len` with the value of `SIZE`. Then calls the stdin syscall and appends a NULL byte at the end + strips the trailing `\n`.
 
 ## `inp`
 
@@ -146,7 +146,7 @@ label NAME - the name of the bss variable
 tags: syscall, regs[rax, rdi, rsi, rdx]
 ```
 
-This macro assumes the existence of the `.bss` variable `NAME` and the asm constant `NAME_len`. Then calls the stdin syscall and appends a NULL byte at the end.
+This macro assumes the existence of the `.bss` variable `NAME` and the asm constant `NAME_len`. Then calls the stdin syscall and appends a NULL byte at the end + strips the trailing `\n`.
 
 ## `strcp`
 

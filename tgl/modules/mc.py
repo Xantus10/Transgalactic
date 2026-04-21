@@ -136,7 +136,7 @@ def inp(args: list[TypedArgument]) -> InstructionList:
         f'lea rsi, [rel {args[0]["value"]}]',
         f'mov rdx, {args[0]["value"]}_len',
         'syscall',
-        f'mov byte [{args[0]["value"]} + rax], 0',
+        f'mov byte [{args[0]["value"]} + rax - 1], 0',
         *wrap['after']
       ]
     }
@@ -322,7 +322,7 @@ def fread(args: list[TypedArgument]) -> InstructionList:
       'content': [
         *wrap['before'],
         f'mov rdi, {args[0]["value"]}',
-        'mov rax, 3',
+        'mov rax, 0',
         f'lea rsi, [rel {args[1]["value"]}]',
         f'mov rdx, {args[2]["value"]}',
         'syscall',
