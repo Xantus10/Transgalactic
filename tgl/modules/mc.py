@@ -312,6 +312,54 @@ def fwrite(args: list[TypedArgument]) -> InstructionList:
     return defineInstruction + fwrite_defined([args[0], {'argtype': 'label', 'value': str_label}, {'argtype': 'label', 'value': f'{str_label}_len'}])
   raise TGLArgumentError(f'Invalid argument type for \'fwrite\' second argument (expected: (label OR string), got: {args[1]})', str(args))
 
+def fread(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 3: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'fread', 'expected': 3, 'got': len(args)}, str(args))
+  if not checkArgTypes(args, ['register', 'label', 'int']) or not isArgString(args[0]) or not isArgString(args[1]) or not isArgInt(args[2]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'fread', 'expected': ('register', 'label', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'], args[2]['argtype'])}, str(args))
+  wrap = saveSyscallArgs('rax')
+  return [
+    {
+      'op': None,
+      'content': [
+        *wrap['before'],
+        f'mov rdi, {args[0]["value"]}',
+        'mov rax, 3',
+        f'lea rsi, [rel {args[1]["value"]}]',
+        f'mov rdx, {args[2]["value"]}',
+        'syscall',
+        *wrap['after']
+      ]
+    }
+  ]
+
+def fclose(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'fclose', 'expected': 1, 'got': len(args)}, str(args))
+  if not args[0]['argtype'] == 'register': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'fclose', 'expected': ('register',), 'got': (args[0]['argtype'],)}, str(args))
+  wrap = saveSyscallArgs()
+  return [
+    {
+      'op': None,
+      'content': [
+        *wrap['before'],
+        f'mov rdi, {args[0]["value"]}',
+        'mov rax, 3',
+        'syscall',
+        *wrap['after']
+      ]
+    }
+  ]
+
+def fclear(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'fclear', 'expected': 1, 'got': len(args)}, str(args))
+  if not args[0]['argtype'] == 'string': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'fclear', 'expected': ('register',), 'got': (args[0]['argtype'],)}, str(args))
+  return [
+    {
+      'op': None,
+      'content': [
+        f'! mc fopen {args[0]["value"]}, W',
+        '! mc fclose rax'
+      ]
+    }
+  ]
 
 
 # Export
@@ -327,5 +375,8 @@ FUNCTIONS: ModuleExport = {
   'strncp': strncp,
   'time': time,
   'fopen': fopen,
-  'fwrite': fwrite
+  'fwrite': fwrite,
+  'fread': fread,
+  'fclose': fclose,
+  'fclear': fclear
 }

@@ -269,9 +269,9 @@ REGS_SET_REND: GlobalRegs = {
   'r4': REGISTER_HIERARCHY['15'],
 }
 
-type FileModeStr = Literal['R', 'W', 'RW']
+type FileModeStr = Literal['R', 'W', 'A']
 FILE_MODES_STR = get_args(FileModeStr.__value__)
-type FileModeInt = Literal[0, 1, 2]
+type FileModeInt = Literal[0, 513, 1026]
 FILE_MODES_INT = get_args(FileModeInt.__value__)
 
 def isFilemode(s: str) -> TypeGuard[FileModeStr]:

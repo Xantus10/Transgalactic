@@ -197,7 +197,7 @@ Note: The value in RAX will be overwritten!
 fopen FILENAME, MODE
 
 string FILENAME - Filename/path to open
-label MODE - Filemode (accepts values R / W / RW)
+label MODE - Filemode (accepts values R / W / A)
 
 tags: syscall, regs[rax, rdi, rsi, rdx], ret[rax]
 ```
@@ -205,3 +205,56 @@ tags: syscall, regs[rax, rdi, rsi, rdx], ret[rax]
 Open the specified file and return a file descriptor in RAX.
 
 Note: The mode is a literal value, not string (notice the absence of `""`): `! mc fopen "file.txt", RW`
+
+## `fwrite`
+
+```
+fwrite FD, CONTENT
+
+register FD - The register currently containing the file descriptor
+label/string CONTENT - The string content to write
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
+```
+
+Perform a `SYS_WRITE` call to write to the file descriptor. If using the label for `CONTENT`, the string must be NULL terminated (since its length is determined dynamically using strlen).
+
+## `fread`
+
+```
+fread FD, DEST, LEN
+
+register FD - The register currently containing the file descriptor
+label DEST - The destination label
+int LEN - How many bytes to read
+
+tags: syscall, regs[rax, rdi, rsi, rdx], ret[rax]
+```
+
+Read content from a file and return the number of bytes read in RAX. This macro does NOT create the buffer.
+
+## `fclose`
+
+```
+fread FD
+
+register FD - The register currently containing the file descriptor
+
+tags: syscall, regs[rax, rdi]
+```
+
+Close the file descriptor.
+
+## `fclear`
+
+```
+fclear FILENAME
+
+string FILENAME - Filename/path to open
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
+```
+
+Clear the desired file.
+
+Note: Just calls `fopen(filename, W)`, followed by `fclose()`.
