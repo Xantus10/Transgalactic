@@ -97,6 +97,14 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#fopen">fopen</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fwrite">fwrite</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fread">fread</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fclose">fclose</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fclear">fclear</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="std.html">std</a>
@@ -259,12 +267,48 @@ tags: syscall, regs[rax, rdi], ret[rax]
 <pre><code>fopen FILENAME, MODE
 
 string FILENAME - Filename/path to open
-label MODE - Filemode (accepts values R / W / RW)
+label MODE - Filemode (accepts values R / W / A)
 
 tags: syscall, regs[rax, rdi, rsi, rdx], ret[rax]
 </code></pre>
 <p>Open the specified file and return a file descriptor in RAX.</p>
 <p>Note: The mode is a literal value, not string (notice the absence of <code>""</code>): <code>! mc fopen "file.txt", RW</code></p>
+<h2 id="fwrite"><code>fwrite</code></h2>
+<pre><code>fwrite FD, CONTENT
+
+register FD - The register currently containing the file descriptor
+label/string CONTENT - The string content to write
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
+</code></pre>
+<p>Perform a <code>SYS_WRITE</code> call to write to the file descriptor. If using the label for <code>CONTENT</code>, the string must be NULL terminated (since its length is determined dynamically using strlen).</p>
+<h2 id="fread"><code>fread</code></h2>
+<pre><code>fread FD, DEST, LEN
+
+register FD - The register currently containing the file descriptor
+label DEST - The destination label
+int LEN - How many bytes to read
+
+tags: syscall, regs[rax, rdi, rsi, rdx], ret[rax]
+</code></pre>
+<p>Read content from a file and return the number of bytes read in RAX. This macro does NOT create the buffer.</p>
+<h2 id="fclose"><code>fclose</code></h2>
+<pre><code>fread FD
+
+register FD - The register currently containing the file descriptor
+
+tags: syscall, regs[rax, rdi]
+</code></pre>
+<p>Close the file descriptor.</p>
+<h2 id="fclear"><code>fclear</code></h2>
+<pre><code>fclear FILENAME
+
+string FILENAME - Filename/path to open
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
+</code></pre>
+<p>Clear the desired file.</p>
+<p>Note: Just calls <code>fopen(filename, W)</code>, followed by <code>fclose()</code>.</p>
               
             </div>
           </div><footer>

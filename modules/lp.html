@@ -137,8 +137,10 @@ int FINAL - Loop will continue until REG reaches FINAL value
 <p>The closing tag is <code>endunt</code></p>
 <p>Example usage:</p>
 <p><code>Go through a NULL-terminated string until it reaches NULL</code></p>
-<pre><code>! unt r8b, 0
+<pre><code>; Load the address
+! unt r8b, 0
   ; Load the character into r8b
+  ; Increment the address
 ! endunt
 </code></pre>
               
