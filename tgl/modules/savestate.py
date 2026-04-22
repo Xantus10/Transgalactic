@@ -32,3 +32,11 @@ def saveSyscallArgs(ret: Registers | None = None):
   sys: list[Registers] = ['rax', 'rdi', 'rsi', 'rdx']
   if ret in sys: sys.remove(ret)
   return _saveRegs(sys)
+
+
+def saveSyscallArgsExtended(ret: Registers | None = None):
+  if Global.options['dont_save_syscall']:
+    return _saveRegs([])
+  sys: list[Registers] = ['rax', 'rdi', 'rsi', 'rdx', 'r8', 'r9', 'r10']
+  if ret in sys: sys.remove(ret)
+  return _saveRegs(sys)

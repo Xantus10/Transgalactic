@@ -3,7 +3,7 @@ from ..globals import Global
 from ..parse import checkArgTypes, strparse, toNASMByteSequence
 from ..types import InstructionList, ModuleExport, TypedArgument, isArgString, isArgInt, filemode_convert, isFilemode
 
-from .savestate import saveRegs, saveSyscallArgs
+from .savestate import saveRegs, saveSyscallArgs, saveSyscallArgsExtended
 
 ### .data section macros
 
@@ -374,13 +374,54 @@ def fclose(args: list[TypedArgument]) -> InstructionList:
 
 def fclear(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'fclear', 'expected': 1, 'got': len(args)}, str(args))
-  if not args[0]['argtype'] == 'string': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'fclear', 'expected': ('register',), 'got': (args[0]['argtype'],)}, str(args))
+  if not args[0]['argtype'] == 'string': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'fclear', 'expected': ('string',), 'got': (args[0]['argtype'],)}, str(args))
   return [
     {
       'op': None,
       'content': [
         f'! mc fopen {args[0]["value"]}, W',
         '! mc fclose rax'
+      ]
+    }
+  ]
+
+
+def malloc(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'malloc', 'expected': 1, 'got': len(args)}, str(args))
+  if not args[0]['argtype'] == 'int': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'malloc', 'expected': ('int',), 'got': (args[0]['argtype'],)}, str(args))
+  wrap = saveSyscallArgsExtended('rax')
+  return [
+    {
+      'op': None,
+      'content': [
+        *wrap['before'],
+        'mov rax, 9',
+        'xor rdi, rdi',
+        f'mov rsi, {args[0]["value"]}',
+        'mov rdx, 3',
+        'mov r10, 34',
+        'mov r8, -1',
+        'xor r9, r9',
+        'syscall',
+        *wrap['after']
+      ]
+    }
+  ]
+
+def free(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'free', 'expected': 2, 'got': len(args)}, str(args))
+  if not args[0]['argtype'] == 'int' or not (args[1]['argtype'] in ['int', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'free', 'expected': ('register', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
+  wrap = saveSyscallArgs()
+  return [
+    {
+      'op': None,
+      'content': [
+        *wrap['before'],
+        f'mov rdi, {args[0]["value"]}',
+        'mov rax, 11',
+        f'mov rsi, {args[1]["value"]}'
+        'syscall',
+        *wrap['after']
       ]
     }
   ]
