@@ -1,6 +1,8 @@
 #ifndef H_META
 #define H_META
 
+#define CHUNK_FLAG_PREVINUSE 0b1
+
 #include <stdint.h>
 
 /**
@@ -26,7 +28,7 @@ typedef struct free_chunk {
   /**
    * Previous chunk size
    */
-  size_t prev_size;
+  size_t* prev_size;
 
   /**
    * This chunk size
