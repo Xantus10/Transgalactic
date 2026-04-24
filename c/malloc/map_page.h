@@ -15,8 +15,14 @@
  */
 size_t PAGE_SIZE = 0;
 
+/**
+ * Initialise the page size
+ */
 size_t init_page_size();
 
+/**
+ * Map a memory page for this process (of size PAGE_SIZE)
+ */
 void* map_page();
 
 #endif

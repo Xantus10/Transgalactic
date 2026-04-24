@@ -19,8 +19,14 @@ void* PAGEMGR_CURRENT = NULL;
  */
 free_chunk* PAGEMGR_FREE_HEAD = NULL;
 
+/**
+ * Initialize global variables
+ */
 void init_pagemgr();
 
+/**
+ * Allocate a new chunk
+ */
 alloc_chunk* new_chunk(size_t size);
 
 

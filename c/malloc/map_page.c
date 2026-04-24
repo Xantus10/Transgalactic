@@ -1,5 +1,6 @@
 #include "map_page.h"
 
+// If we are on windows
 #ifdef _WIN32
   /**
    * Initialize PAGE_SIZE
@@ -27,7 +28,7 @@
 
     return ptr;
   }
-#else
+#else // If we are on Linux
   /**
    * Initialize PAGE_SIZE
    */
