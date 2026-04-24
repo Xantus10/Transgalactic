@@ -386,7 +386,7 @@ def fclear(args: list[TypedArgument]) -> InstructionList:
   ]
 
 
-def malloc(args: list[TypedArgument]) -> InstructionList:
+def mmap(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'malloc', 'expected': 1, 'got': len(args)}, str(args))
   if not args[0]['argtype'] == 'int': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'malloc', 'expected': ('int',), 'got': (args[0]['argtype'],)}, str(args))
   wrap = saveSyscallArgsExtended('rax')
@@ -397,7 +397,7 @@ def malloc(args: list[TypedArgument]) -> InstructionList:
         *wrap['before'],
         'mov rax, 9',
         'xor rdi, rdi',
-        f'mov rsi, {args[0]["value"]}',
+        f'mov rsi, {args[0]["value"]*4096}',
         'mov rdx, 3',
         'mov r10, 34',
         'mov r8, -1',
@@ -408,9 +408,9 @@ def malloc(args: list[TypedArgument]) -> InstructionList:
     }
   ]
 
-def free(args: list[TypedArgument]) -> InstructionList:
+def munmap(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'free', 'expected': 2, 'got': len(args)}, str(args))
-  if not args[0]['argtype'] == 'int' or not (args[1]['argtype'] in ['int', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'free', 'expected': ('register', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
+  if not args[0]['argtype'] == 'register' or not (args[1]['argtype'] in ['int', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'free', 'expected': ('register', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
   wrap = saveSyscallArgs()
   return [
     {
@@ -419,7 +419,7 @@ def free(args: list[TypedArgument]) -> InstructionList:
         *wrap['before'],
         f'mov rdi, {args[0]["value"]}',
         'mov rax, 11',
-        f'mov rsi, {args[1]["value"]}'
+        f'mov rsi, {args[1]["value"]*4096}'
         'syscall',
         *wrap['after']
       ]
