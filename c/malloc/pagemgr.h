@@ -7,17 +7,17 @@
 /**
  * Pointer to the head of the current page
  */
-void* PAGEMGR_HEAD = NULL;
+char* PAGEMGR_HEAD;
 
 /**
  * Current position on the page
  */
-void* PAGEMGR_CURRENT = NULL;
+char* PAGEMGR_CURRENT;
 
 /**
  * Head of the free chunk linked list
  */
-free_chunk* PAGEMGR_FREE_HEAD = NULL;
+free_chunk* PAGEMGR_FREE_HEAD;
 
 /**
  * Initialize global variables
@@ -29,6 +29,9 @@ void init_pagemgr();
  */
 alloc_chunk* new_chunk(size_t size);
 
-
+/**
+ * Free a chunk
+ */
+void chunk_free(alloc_chunk* chunk);
 
 #endif

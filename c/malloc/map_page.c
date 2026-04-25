@@ -1,5 +1,7 @@
 #include "map_page.h"
 
+PAGE_SIZE = 0;
+
 // If we are on windows
 #ifdef _WIN32
   /**
