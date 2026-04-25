@@ -97,7 +97,7 @@ tags: syscall, regs[rax, rdi, rsi, rdx]
 
 This function ASSUMES that you defined a label `NAME` and now you want to use it.
 
-Note: This function also assumes the existence of a `NAME_len` assembler constant which it uses for the string length. (If you wish to print a dynamic string, check out `std print`)
+Note: This function also assumes the existence of a `NAME_len` assembler constant which it uses for the string length. (If you wish to print a dynamic string, check out `mc print`)
 
 ## `exit`
 
