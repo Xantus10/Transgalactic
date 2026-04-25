@@ -53,11 +53,23 @@ alloc_chunk* new_chunk(size_t size) {
       // Set the PREVINUSE flag for the NEXT chunk
       next_chunk_flags_add(ret, CHUNK_FLAG_PREVINUSE);
       // If there is not enough space in the chunk to split it
-      if (ret->size <= size + sizeof(alloc_chunk)) {
+      if ((ret->size & ~CHUNK_FLAGS_SPACE) <= size + sizeof(alloc_chunk)) {
         ret->next = NULL;
         ret->prev = NULL;
         return (alloc_chunk*) ret;
-      } // HANDLE SPLITTING WHEN NOT SAME SIZE
+      }
+      // Size of the new chunk (total_size - size - new_chunk_metadata)
+      size_t new_size = (ret->size & ~CHUNK_FLAGS_SPACE) - size - sizeof(alloc_chunk);
+      // Set updated size
+      ret->size &= CHUNK_FLAGS_SPACE;
+      ret->size |= size;
+      // New chunk
+      alloc_chunk* new = next_chunk(ret);
+      new->prev_size = 0;
+      new->size = new_size | CHUNK_FLAG_PREVINUSE;
+      // Mark the chunk as free
+      chunk_free(new);
+      return (alloc_chunk*) ret;
     }
   }
   return NULL;
