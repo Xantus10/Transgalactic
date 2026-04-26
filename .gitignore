@@ -1,7 +1,9 @@
 __pycache__
 
 docs/site
-
+c/*/.vscode/
+c/*/main.c
+c/*/main.exe
 test.asm
 tgl_test.asm
 tgl.o

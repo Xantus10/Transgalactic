@@ -6,7 +6,7 @@ alloc_chunk* next_chunk(alloc_chunk* addr) {
 }
 
 free_chunk* prev_chunk(alloc_chunk* addr) {
-  return addr - sizeof(alloc_chunk) - addr->prev_size;
+  return (free_chunk*) addr - sizeof(alloc_chunk) - addr->prev_size;
 }
 
 alloc_chunk* next_chunk_flags_add(alloc_chunk* addr, uint8_t mask) {

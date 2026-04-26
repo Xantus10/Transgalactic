@@ -39,12 +39,12 @@ typedef struct free_chunk {
   /**
    * Previous free pointer
    */
-  free_chunk* prev;
+  struct free_chunk* prev;
 
   /**
    * Next free pointer
    */
-  free_chunk* next;
+  struct free_chunk* next;
 
 } free_chunk;
 

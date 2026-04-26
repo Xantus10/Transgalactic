@@ -13,7 +13,7 @@
 /**
  * The page size detected
  */
-size_t PAGE_SIZE;
+extern size_t PAGE_SIZE;
 
 /**
  * Initialise the page size

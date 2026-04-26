@@ -1,12 +1,11 @@
 #include "pagemgr.h"
 
 
-PAGEMGR_HEAD = NULL;
+char* PAGEMGR_HEAD = NULL;
 
-PAGEMGR_CURRENT = NULL;
+char* PAGEMGR_CURRENT = NULL;
 
-PAGEMGR_FREE_HEAD = NULL;
-
+free_chunk* PAGEMGR_FREE_HEAD = NULL;
 
 void init_pagemgr() {
   // Initialize map_page
@@ -51,7 +50,7 @@ alloc_chunk* new_chunk(size_t size) {
       // Remove the chunk
       ll_remove_free_chunk(ret);
       // Set the PREVINUSE flag for the NEXT chunk
-      next_chunk_flags_add(ret, CHUNK_FLAG_PREVINUSE);
+      next_chunk_flags_add((alloc_chunk*) ret, CHUNK_FLAG_PREVINUSE);
       // If there is not enough space in the chunk to split it
       if ((ret->size & ~CHUNK_FLAGS_SPACE) <= size + sizeof(alloc_chunk)) {
         ret->next = NULL;
@@ -64,7 +63,7 @@ alloc_chunk* new_chunk(size_t size) {
       ret->size &= CHUNK_FLAGS_SPACE;
       ret->size |= size;
       // New chunk
-      alloc_chunk* new = next_chunk(ret);
+      alloc_chunk* new = next_chunk((alloc_chunk*) ret);
       new->prev_size = 0;
       new->size = new_size | CHUNK_FLAG_PREVINUSE;
       // Mark the chunk as free
@@ -101,7 +100,7 @@ void chunk_free(alloc_chunk* chunk) {
   alloc_chunk* nnext = next_chunk(next);
   // Check the next-next chunk for info about the next chunk
   if (!(nnext->size & CHUNK_FLAG_PREVINUSE)) {
-    if (nnext == PAGEMGR_FREE_HEAD) {
+    if ((free_chunk*) next == PAGEMGR_FREE_HEAD) {
       // Move the head
       PAGEMGR_FREE_HEAD = ((free_chunk*) next)->next;
     }
