@@ -2,11 +2,11 @@
 
 
 alloc_chunk* next_chunk(alloc_chunk* addr) {
-  return addr + sizeof(alloc_chunk) + addr->size;
+  return (alloc_chunk*) (((char*) addr) + sizeof(alloc_chunk) + (addr->size & ~CHUNK_FLAGS_SPACE));
 }
 
 free_chunk* prev_chunk(alloc_chunk* addr) {
-  return (free_chunk*) addr - sizeof(alloc_chunk) - addr->prev_size;
+  return (free_chunk*) (((char*) addr) - sizeof(alloc_chunk) - addr->prev_size);
 }
 
 alloc_chunk* next_chunk_flags_add(alloc_chunk* addr, uint8_t mask) {
@@ -24,7 +24,7 @@ alloc_chunk* next_chunk_flags_remove(alloc_chunk* addr, uint8_t mask) {
 
 void ll_add_free_chunk(free_chunk* list_head, free_chunk* chunk) {
   // Set the former 1st item values
-  list_head->prev = chunk;
+  if (list_head != NULL) list_head->prev = chunk;
   // Link the new chunk to the previous head
   chunk->next = list_head;
   chunk->prev = NULL;

@@ -1,6 +1,5 @@
 #include "pagemgr.h"
 
-
 char* PAGEMGR_HEAD = NULL;
 
 char* PAGEMGR_CURRENT = NULL;
@@ -89,14 +88,18 @@ void chunk_free(alloc_chunk* chunk) {
     }
     ll_remove_free_chunk(prev);
     // Expand the prev chunk by our chunk
-    size_t new_size = (prev->size & ~CHUNK_FLAGS_SPACE) + (chunk->size & ~CHUNK_FLAGS_SPACE);
+    size_t new_size = (prev->size & ~CHUNK_FLAGS_SPACE) + (chunk->size & ~CHUNK_FLAGS_SPACE) + sizeof(alloc_chunk);
     prev->size &= CHUNK_FLAGS_SPACE;
     prev->size |= new_size;
     // Free the expanded chunk
     return chunk_free((alloc_chunk*) prev);
   }
   // If we are at the end of allocated chunks (size==0)
-  if (next->size & ~CHUNK_FLAGS_SPACE == 0) return;
+  if ((next->size & ~CHUNK_FLAGS_SPACE) == 0) {
+    ll_add_free_chunk(PAGEMGR_FREE_HEAD, (free_chunk*) chunk);
+    PAGEMGR_FREE_HEAD = (free_chunk*) chunk;
+    return;
+  }
   alloc_chunk* nnext = next_chunk(next);
   // Check the next-next chunk for info about the next chunk
   if (!(nnext->size & CHUNK_FLAG_PREVINUSE)) {
