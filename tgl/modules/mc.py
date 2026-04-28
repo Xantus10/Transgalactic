@@ -387,8 +387,8 @@ def fclear(args: list[TypedArgument]) -> InstructionList:
 
 
 def mmap(args: list[TypedArgument]) -> InstructionList:
-  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'malloc', 'expected': 1, 'got': len(args)}, str(args))
-  if not args[0]['argtype'] == 'int': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'malloc', 'expected': ('int',), 'got': (args[0]['argtype'],)}, str(args))
+  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'mmap', 'expected': 1, 'got': len(args)}, str(args))
+  if not args[0]['argtype'] == 'int': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'mmap', 'expected': ('int',), 'got': (args[0]['argtype'],)}, str(args))
   wrap = saveSyscallArgsExtended('rax')
   return [
     {
@@ -409,8 +409,8 @@ def mmap(args: list[TypedArgument]) -> InstructionList:
   ]
 
 def munmap(args: list[TypedArgument]) -> InstructionList:
-  if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'free', 'expected': 2, 'got': len(args)}, str(args))
-  if not args[0]['argtype'] == 'register' or not (args[1]['argtype'] in ['int', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'free', 'expected': ('register', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
+  if len(args) != 2: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'munmap', 'expected': 2, 'got': len(args)}, str(args))
+  if not args[0]['argtype'] == 'register' or not (args[1]['argtype'] in ['int', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'munmap', 'expected': ('register', 'int'), 'got': (args[0]['argtype'], args[1]['argtype'])}, str(args))
   wrap = saveSyscallArgs()
   return [
     {
