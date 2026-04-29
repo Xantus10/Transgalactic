@@ -38,7 +38,7 @@ void ll_remove_free_chunk(free_chunk* chunk) {
     // Pop the first item
     chunk->next->prev = NULL;
   // If is last
-  } else if (chunk->next = NULL) {
+  } else if (chunk->next == NULL) {
     // Unlink from last item
     chunk->prev->next = NULL;
   } else {
