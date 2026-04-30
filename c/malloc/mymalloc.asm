@@ -12,7 +12,9 @@ endstruc
 
 PAGE_SIZE equ 4096
 FLAGS_SPACE equ 15
+FLAGS_SPACE_INVERSE equ -16
 FLAG_PREVINUSE equ 1
+FLAG_PREVINUSE_INVERSE equ -2
 
 
 section .data
@@ -23,7 +25,14 @@ section .data
 
 section .text
   init:
-  ! mc mmap 1
+  mov rax, 9
+  xor rdi, rdi
+  mov rsi, PAGE_SIZE
+  mov rdx, 3
+  mov r10, 34
+  mov r8, -1
+  xor r9, r9
+  syscall
   mov qword [rel HEAD], rax
   mov qword [rel CUR], rax
   ret
@@ -32,17 +41,29 @@ section .text
   ll_lookfor:
   ; Load the address at FREE_HEAD
   mov rdi, [rel FREE_HEAD]
-  .start
+  .start:
     test rdi, rdi
     jz .end
     cmp [rdi + FreeChunk.size], rax
     jge .end
     mov rdi, [rdi + FreeChunk.next]
     jmp .start
-  .end
+  .end:
   ret
 
-  ; pointer to chunk in rdi
+  ; pointer to chunk in RDI
+  ll_add_free_chunk:
+  mov rax, [rel FREE_HEAD]
+  ; Is free head NULL
+  test rax, -1
+  jz .no_head
+    mov qword [rax + FreeChunk.prev], rdi
+  .no_head:
+  mov qword [rdi + FreeChunk.prev], 0
+  mov qword [rdi + FreeChunk.next], rax
+  ret
+
+  ; pointer to chunk in RDI
   ll_remove_free_chunk:
   mov rdx, [rdi + FreeChunk.prev]
   mov rsi, [rdi + FreeChunk.next]
@@ -52,15 +73,15 @@ section .text
     jz .single
       ; Unlink from next item
       mov qword [rsi + FreeChunk.prev], 0
-    .single
+    .single:
     ret
-  .not_first
+  .not_first:
     test rsi, rsi
     jnz .not_last
     ; Unlink from last item
     mov qword [rdx + FreeChunk.next], 0
     ret
-  .not_last
+  .not_last:
     ; chunk->prev->next
     mov qword [rdx + FreeChunk.next], rsi
     ; chunk->next->prev
@@ -89,12 +110,12 @@ section .text
     ; |= size
     or rdx, rax
     ; Test for 1st chunk CUR == HEAD
-    test rdi, [rel HEAD]
-    jnz .not_first
+    cmp rdi, [rel HEAD]
+    jne .not_first
       or rdx, FLAG_PREVINUSE
-    .not_first
+    .not_first:
     ; Store the data back
-    mov [rsi], rdx
+    mov qword [rsi], rdx
     ; Next chunk->size
     lea rsi, [rdi + AllocChunk_size + rax + AllocChunk.size]
     mov rdx, [rsi]
@@ -102,9 +123,9 @@ section .text
     and rdx, FLAGS_SPACE
     ; Add the PREVINUSE flag
     or rdx, FLAG_PREVINUSE
-    mov [rsi], rdx
+    mov qword [rsi], rdx
     ret
-  .free_list_fallback
+  .free_list_fallback:
     ; Is FREE_HEAD NULL pointer?
     test qword [rel FREE_HEAD], -1
     jz .fail
@@ -114,21 +135,123 @@ section .text
     test rdi, rdi
     jz .fail
     ; Is the chunk the FREE_HEAD
-    test rdi, [rel FREE_HEAD]
-    jz .not_head
+    cmp rdi, [rel FREE_HEAD]
+    jne .not_head
       ; Move the free head to be the ->next
       mov rdx, [rdi + FreeChunk.next]
       mov qword [rel FREE_HEAD], rdx
-    .not_head
+    .not_head:
     call ll_remove_free_chunk
     lea rsi, [rdi + AllocChunk_size + rax + AllocChunk.size]
     mov rdx, [rsi]
     ; Add the PREVINUSE flag
     or rdx, FLAG_PREVINUSE
-    mov [rsi], rdx
+    mov qword [rsi], rdx
     ; Check for chunk splitting
-
-  .fail
+    mov rsi, [rdi + AllocChunk.size]
+    and rsi, FLAGS_SPACE_INVERSE
+    mov rdx, rax
+    add rdx, AllocChunk_size
+    cmp rsi, rdx
+    jg .chunk_split
+      mov qword [rdi + FreeChunk.next], 0
+      mov qword [rdi + FreeChunk.prev], 0
+      ret
+    .chunk_split:
+    ; rsi holds new_size
+    sub rsi, rax
+    sub rsi, AllocChunk_size
+    mov rdx, [rdi + AllocChunk.size]
+    ; Set the ret->size
+    and rdx, FLAGS_SPACE
+    or rdx, rax
+    mov qword [rdi + AllocChunk.size], rdx
+    ; rdx = new
+    lea rdx, [rdi + rax + AllocChunk_size]
+    mov qword [rdx + AllocChunk.prev_size], 0
+    ; Add the previnuse flag
+    or rsi, FLAG_PREVINUSE
+    mov qword [rdx + AllocChunk.size], rsi
+    mov rax, rdi
+    mov rdi, rdx
+    call free
+    mov rdi, rax
+    ret
+  .fail:
   mov rdi, 0
   ret
-  
+
+
+  ; Pointer to free in RDI
+  free:
+  mov rax, [rdi + AllocChunk.size]
+  ; Next chunk
+  lea rsi, [rdi + AllocChunk_size + rax]
+  mov rdx, [rsi]
+  and rdx, FLAG_PREVINUSE_INVERSE
+  mov qword [rsi], rdx
+  mov rdx, rax
+  and rdx, FLAGS_SPACE_INVERSE
+  mov qword [rsi + AllocChunk.prev_size], rdx
+  test rax, FLAG_PREVINUSE
+  ; If the previous chunk is empty - coalesce
+  jnz .previnuse_set
+    ; rdx holds size & FLAGS_SPACE_INV, and that's all we need
+    mov rax, [rdi + AllocChunk.prev_size]
+    ; prev chunk
+    sub rdi, rax
+    sub rdi, AllocChunk_size
+    cmp rdi, [rel FREE_HEAD]
+    jne .not_head
+      ; Move the free head to be the ->next
+      mov rax, [rdi + FreeChunk.next]
+      mov qword [rel FREE_HEAD], rax
+    .not_head:
+    call ll_remove_free_chunk
+    mov rax, [rdi + FreeChunk.size]
+    and rax, FLAGS_SPACE_INVERSE
+    add rax, rdx
+    add rax, AllocChunk_size
+    lea rsi, [rdi + FreeChunk.size]
+    mov rdx, [rsi]
+    ; Logically set size = 0
+    and rdx, FLAGS_SPACE
+    or rdx, rax
+    mov qword [rsi], rdx
+    ; Call free with rdi=prev chunk
+    call free
+    ret
+  .previnuse_set:
+  mov rdx, [rsi + AllocChunk.size]
+  and rdx, FLAGS_SPACE_INVERSE
+  ; Last chunk - size==0
+  test rdx, rdx
+  jz .end
+  mov rax, [rsi + AllocChunk.size]
+  ; NextNext chunk
+  lea rdx, [rsi + AllocChunk_size + rax]
+  mov rax, [rdx + AllocChunk.size]
+  and rax, FLAG_PREVINUSE
+  ; Is the nnext->flag_previnuse set
+  test rax, rax
+  jnz .end
+    cmp rsi, [rel FREE_HEAD]
+    jne .not_headn
+      ; Move the free head to be the ->next
+      mov rax, [rsi + FreeChunk.next]
+      mov qword [rel FREE_HEAD], rax
+    .not_headn:
+    mov rdi, rsi
+    call ll_remove_free_chunk
+    call free
+    ret
+  .end:
+  call ll_add_free_chunk
+  mov qword [rel FREE_HEAD], rdi
+  ret
+
+global _start
+_start:
+  mov rax, 60
+  xor rdi, rdi
+  syscall
