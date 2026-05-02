@@ -116,8 +116,11 @@ section .text
     .not_first:
     ; Store the data back
     mov qword [rsi], rdx
+    ; Move the CUR pointer
+    lea rsi, [rdi + AllocChunk_size + rax]
+    mov qword [rel CUR], rsi
     ; Next chunk->size
-    lea rsi, [rdi + AllocChunk_size + rax + AllocChunk.size]
+    add rsi, AllocChunk.size
     mov rdx, [rsi]
     ; &= FLAGS_SPACE
     and rdx, FLAGS_SPACE
@@ -184,15 +187,19 @@ section .text
 
   ; Pointer to free in RDI
   free:
-  mov rax, [rdi + AllocChunk.size]
-  ; Next chunk
-  lea rsi, [rdi + AllocChunk_size + rax]
-  mov rdx, [rsi]
-  and rdx, FLAG_PREVINUSE_INVERSE
-  mov qword [rsi], rdx
-  mov rdx, rax
+  ; This-> size
+  mov rdx, [rdi + AllocChunk.size]
+  ; Remove flags (pure size)
   and rdx, FLAGS_SPACE_INVERSE
+  ; Next chunk
+  lea rsi, [rdi + AllocChunk_size + rdx]
+  ; Set the prev_size
   mov qword [rsi + AllocChunk.prev_size], rdx
+  ; Remove next->PREVINUSE
+  mov rax, [rsi + AllocChunk.size]
+  and rax, FLAG_PREVINUSE_INVERSE
+  mov qword [rsi + AllocChunk.size], rax
+  mov rax, [rdi + AllocChunk.size]
   test rax, FLAG_PREVINUSE
   ; If the previous chunk is empty - coalesce
   jnz .previnuse_set
@@ -207,11 +214,13 @@ section .text
       mov rax, [rdi + FreeChunk.next]
       mov qword [rel FREE_HEAD], rax
     .not_head:
-    call ll_remove_free_chunk
+    ; New size
     mov rax, [rdi + FreeChunk.size]
     and rax, FLAGS_SPACE_INVERSE
     add rax, rdx
     add rax, AllocChunk_size
+    ; Remove the chunk
+    call ll_remove_free_chunk
     lea rsi, [rdi + FreeChunk.size]
     mov rdx, [rsi]
     ; Logically set size = 0
@@ -252,6 +261,29 @@ section .text
 
 global _start
 _start:
+  call init
+
+  mov rax, 0x20
+  call malloc
+  mov r8, rdi
+
+  mov rax, 0x10
+  call malloc
+  mov r9, rdi
+
+  mov rax, 0x20
+  call malloc
+  mov r10, rdi
+
+  mov rdi, r9
+  call free
+
+  mov rdi, r10
+  call free
+
+  mov rdi, r8
+  call free
+
   mov rax, 60
   xor rdi, rdi
   syscall
