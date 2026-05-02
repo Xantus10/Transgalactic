@@ -4,6 +4,9 @@ docs/site
 c/*/.vscode/
 c/*/main.c
 c/*/main.exe
+c/*/mymalloc.o
+c/*/mymalloc
+c/*/.gdb*
 test.asm
 tgl_test.asm
 tgl.o
