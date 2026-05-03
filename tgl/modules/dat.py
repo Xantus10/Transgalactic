@@ -11,7 +11,7 @@ def init(args: list[TypedArgument]) -> InstructionList:
   pagesize = 4096
   if len(args) == 1:
     if not isArgInt(args[0]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'init', 'expected': ('int',), 'got': (args[0]['argtype'],)}, str(args))
-    pagesize = args[0]['value'] * 4096
+    pagesize = args[0]['value']
 
   rax = Global.regs['r1']['b64']
   rdi = Global.regs['r2']['b64']
