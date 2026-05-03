@@ -278,7 +278,7 @@ mmap SIZE
 
 int/label SIZE - The size to allocate (should align with page)
 
-tags: syscall, regs[rax, rdi, rsi, rdx], ret[rax]
+tags: syscall, regs[rax, rdi, rsi, rdx, r8, r9, r10], ret[rax]
 ```
 
 Make a syscall to `mmap`. Other than size, the register values are preset.
