@@ -21,7 +21,7 @@ def isArgString(a: TypedArgument) -> TypeGuard[TypedArgument_str]:
 def isArgInt(a: TypedArgument) -> TypeGuard[TypedArgument_int]:
   return a['argtype'] == 'int'
 
-type Modules = Literal['mc', 'std', 'lp']
+type Modules = Literal['mc', 'std', 'lp', 'dat']
 DEFINED_MODULES: tuple[Modules] = get_args(Modules.__value__)
 
 class TGLLine(TypedDict):
