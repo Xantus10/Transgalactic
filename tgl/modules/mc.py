@@ -388,7 +388,7 @@ def fclear(args: list[TypedArgument]) -> InstructionList:
 
 def mmap(args: list[TypedArgument]) -> InstructionList:
   if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'mmap', 'expected': 1, 'got': len(args)}, str(args))
-  if not args[0]['argtype'] == 'int': raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'mmap', 'expected': ('int',), 'got': (args[0]['argtype'],)}, str(args))
+  if not (args[0]['argtype'] in ['int', 'label']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'mmap', 'expected': ('int',), 'got': (args[0]['argtype'],)}, str(args))
   wrap = saveSyscallArgsExtended('rax')
   return [
     {
@@ -397,7 +397,7 @@ def mmap(args: list[TypedArgument]) -> InstructionList:
         *wrap['before'],
         'mov rax, 9',
         'xor rdi, rdi',
-        f'mov rsi, {args[0]["value"]*4096}',
+        f'mov rsi, {args[0]["value"]}',
         'mov rdx, 3',
         'mov r10, 34',
         'mov r8, -1',
@@ -419,7 +419,7 @@ def munmap(args: list[TypedArgument]) -> InstructionList:
         *wrap['before'],
         f'mov rdi, {args[0]["value"]}',
         'mov rax, 11',
-        f'mov rsi, {args[1]["value"]*4096}'
+        f'mov rsi, {args[1]["value"]}'
         'syscall',
         *wrap['after']
       ]
@@ -444,5 +444,7 @@ FUNCTIONS: ModuleExport = {
   'fwrite': fwrite,
   'fread': fread,
   'fclose': fclose,
-  'fclear': fclear
+  'fclear': fclear,
+  'mmap': mmap,
+  'munmap': munmap
 }
