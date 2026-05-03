@@ -270,3 +270,34 @@ tags: syscall, regs[rax, rdi, rsi, rdx]
 Clear the desired file.
 
 Note: Just calls `fopen(filename, W)`, followed by `fclose()`.
+
+## `mmap`
+
+```
+mmap SIZE
+
+int/label SIZE - The size to allocate (should align with page)
+
+tags: syscall, regs[rax, rdi, rsi, rdx], ret[rax]
+```
+
+Make a syscall to `mmap`. Other than size, the register values are preset.
+
+- `addr (rdi)` - `0` (Let kernel choose address)
+- `prot (rdx)` - `PROT_READ | PROT_WRITE`
+- `flags (r10)` - `MAP_PRIVATE | MAP_ANONYMOUS`
+- `fd (r8)` - `-1` (File descriptor required `-1` for `MAP_ANONYMOUS`)
+- `offset (r9)` - `0` (Offset in file `0` since no `fd`)
+
+## `munmap`
+
+```
+munmap SIZE
+
+label ADDR - The address to free
+int/label SIZE - The size to allocate (should align with page)
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
+```
+
+Make a syscall to `munmap`.
