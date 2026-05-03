@@ -107,11 +107,17 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#fclear">fclear</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mmap">mmap</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#munmap">munmap</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="std.html">std</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="lp.html">lp</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="dat.html">dat</a>
                   </li>
               </ul>
       </div>
@@ -203,7 +209,7 @@ label NAME - the defined label to print
 tags: syscall, regs[rax, rdi, rsi, rdx]
 </code></pre>
 <p>This function ASSUMES that you defined a label <code>NAME</code> and now you want to use it.</p>
-<p>Note: This function also assumes the existence of a <code>NAME_len</code> assembler constant which it uses for the string length. (If you wish to print a dynamic string, check out <code>std print</code>)</p>
+<p>Note: This function also assumes the existence of a <code>NAME_len</code> assembler constant which it uses for the string length. (If you wish to print a dynamic string, check out <code>mc print</code>)</p>
 <h2 id="exit"><code>exit</code></h2>
 <pre><code>exit CODE
 
@@ -319,6 +325,30 @@ tags: syscall, regs[rax, rdi, rsi, rdx]
 </code></pre>
 <p>Clear the desired file.</p>
 <p>Note: Just calls <code>fopen(filename, W)</code>, followed by <code>fclose()</code>.</p>
+<h2 id="mmap"><code>mmap</code></h2>
+<pre><code>mmap SIZE
+
+int/label SIZE - The size to allocate (should align with page)
+
+tags: syscall, regs[rax, rdi, rsi, rdx, r8, r9, r10], ret[rax]
+</code></pre>
+<p>Make a syscall to <code>mmap</code>. Other than size, the register values are preset.</p>
+<ul>
+<li><code>addr (rdi)</code> - <code>0</code> (Let kernel choose address)</li>
+<li><code>prot (rdx)</code> - <code>PROT_READ | PROT_WRITE</code></li>
+<li><code>flags (r10)</code> - <code>MAP_PRIVATE | MAP_ANONYMOUS</code></li>
+<li><code>fd (r8)</code> - <code>-1</code> (File descriptor required <code>-1</code> for <code>MAP_ANONYMOUS</code>)</li>
+<li><code>offset (r9)</code> - <code>0</code> (Offset in file <code>0</code> since no <code>fd</code>)</li>
+</ul>
+<h2 id="munmap"><code>munmap</code></h2>
+<pre><code>munmap SIZE
+
+label ADDR - The address to free
+int/label SIZE - The size to allocate (should align with page)
+
+tags: syscall, regs[rax, rdi, rsi, rdx]
+</code></pre>
+<p>Make a syscall to <code>munmap</code>.</p>
               
             </div>
           </div><footer>
