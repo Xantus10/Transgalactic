@@ -9,6 +9,7 @@ nav:
     - mc: modules/mc.md
     - std: modules/std.md
     - lp: modules/lp.md
+    - dat: modules/dat.md
 theme: readthedocs
 use_directory_urls: false
 markdown_extensions: 
