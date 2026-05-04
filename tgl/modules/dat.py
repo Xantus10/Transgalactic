@@ -32,6 +32,9 @@ def init(args: list[TypedArgument]) -> InstructionList:
   freeheadLabel, _ = Global.getGlobalIdFor('FREE_HEAD')
   
   initLabel, _ = Global.getGlobalIdFor('init')
+  ll_lookfor = Global.getRandIdFor('ll_lookfor')
+  ll_addfreech = Global.getRandIdFor('ll_addfreech')
+  ll_removefreech = Global.getRandIdFor('ll_removefreech')
   mallocLabel, _ = Global.getGlobalIdFor('malloc')
   freeLabel, _ = Global.getGlobalIdFor('free')
 
@@ -64,10 +67,48 @@ def init(args: list[TypedArgument]) -> InstructionList:
       'op': 'section',
       'section': '.text',
       'content': [
-        f'{initLabel}:',
+        f'{initLabel}:', # Init func
         f'! mc mmap PAGE_SIZE',
         f'mov qword [rel {headLabel}], rax',
         f'mov qword [rel {curLabel}], rax',
+        'ret',
+        f'{ll_lookfor}:', # LL look_for
+        f'mov {rdi}, [rel {freeheadLabel}]',
+        '.start:'
+        'jz .end',
+        f'cmp [{rdi} + {frChunkLabel}.size], rax',
+        'jge .end',
+        f'mov {rdi}, [{rdi} + {frChunkLabel}.next]',
+        'jmp .start',
+        '.end:',
+        'ret',
+        f'{ll_addfreech}:', # LL add_free_chunk
+        f'mov {rax}, [rel {freeheadLabel}]',
+        f'test {rax}, -1',
+        'jz .no_head',
+        f'mov qword [{rax} + {frChunkLabel}.prev], {rdi}',
+        '.no_head:',
+        f'mov qword [{rdi} + {frChunkLabel}.prev], 0',
+        f'mov qword [{rdi} + {frChunkLabel}.next], rax',
+        'ret',
+        f'{ll_removefreech}:', # LL remove_free_chunk
+        f'mov {rdx}, [{rdi} + {frChunkLabel}.prev]',
+        f'mov {rsi}, [{rdi} + {frChunkLabel}.next]',
+        f'test {rdx}, {rdx}',
+        'jnz .not_first',
+        f'test {rsi}, {rsi}',
+        'jz .single',
+        f'mov qword [{rsi} + {frChunkLabel}.prev], 0',
+        '.single:',
+        'ret',
+        '.not_first:',
+        f'test {rsi}, {rsi}',
+        'jnz .not_last',
+        f'mov qword [{rdx} + {frChunkLabel}.next], 0',
+        'ret',
+        '.not_last:',
+        f'mov qword [{rdx} + {frChunkLabel}.next], {rsi}',
+        f'mov qword [{rsi} + {frChunkLabel}.next], {rdx}',
         'ret'
       ]
     },
