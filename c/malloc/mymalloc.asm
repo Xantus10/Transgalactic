@@ -175,10 +175,10 @@ section .text
     ; Add the previnuse flag
     or rsi, FLAG_PREVINUSE
     mov qword [rdx + AllocChunk.size], rsi
-    mov rax, rdi
+    push rdi
     mov rdi, rdx
     call free
-    mov rdi, rax
+    pop rdi
     ret
   .fail:
   mov rdi, 0
@@ -263,11 +263,11 @@ global _start
 _start:
   call init
 
-  mov rax, 0x20
+  mov rax, 0xf00
   call malloc
   mov r8, rdi
 
-  mov rax, 0x10
+  mov rax, 0x90
   call malloc
   mov r9, rdi
 
@@ -278,11 +278,20 @@ _start:
   mov rdi, r9
   call free
 
-  mov rdi, r10
-  call free
-
   mov rdi, r8
   call free
+
+  mov rax, 0x40
+  call malloc
+  mov r8, rdi
+
+  mov rax, 0x40
+  call malloc
+  mov r9, rdi
+
+  mov rax, 0xff0
+  call malloc
+  mov r11, rdi
 
   mov rax, 60
   xor rdi, rdi
