@@ -109,7 +109,35 @@ def init(args: list[TypedArgument]) -> InstructionList:
         '.not_last:',
         f'mov qword [{rdx} + {frChunkLabel}.next], {rsi}',
         f'mov qword [{rsi} + {frChunkLabel}.next], {rdx}',
-        'ret'
+        'ret',
+        f'{mallocLabel}:', # malloc - size in RAX
+        f'mov {rdi}, [rel {curLabel}]',
+        f'lea {rdi}, [{rdi} + {alChunkLabel}_size*2]',
+        f'add {rdi}, {rax}',
+        f'mov {rsi}, [rel {headLabel}]',
+        f'add {rsi}, {pagesizeLabel}',
+        f'cmp {rdi}, {rsi}',
+        'jge .free_list_fallback',
+        f'mov {rdi}, [rel {curLabel}]',
+        f'mov qword [{rdi}], 0',
+        f'lea {rsi}, [{rdi} + {alChunkLabel}.size]',
+        f'mov {rdx}, [{rsi}]',
+        f'and {rdx}, {flagsSpaceLabel}',
+        f'or {rdx}, {rax}',
+        f'cmp {rdi}, [rel {headLabel}]',
+        'jne .not_first',
+        f'or {rdx}, {flagPrevinuseLabel}',
+        '.not_first:',
+        f'mov qword [{rsi}], {rdx}'
+        f'lea {rsi}, [{rdi} + {alChunkLabel}_size + {rax}]',
+        f'mov qword [rel {curLabel}], {rsi}',
+        f'add {rsi}, {alChunkLabel}.size',
+        f'mov {rdx}, [{rsi}]',
+        f'and {rdx}, {flagsSpaceLabel}',
+        f'or {rdx}, {flagPrevinuseLabel}',
+        f'mov qword [{rsi}], {rdx}',
+        'ret',
+        '.free_list_fallback'
       ]
     },
     {
