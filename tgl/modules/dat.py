@@ -180,7 +180,40 @@ def init(args: list[TypedArgument]) -> InstructionList:
         'ret',
         '.fail:',
         f'mov {rdi}, 0',
-        'ret'
+        'ret',
+        f'{freeLabel}:', # free (pointer in RDI)
+        f'mov {rdx}, [{rdi} + {alChunkLabel}.size]',
+        f'and {rdx}, {flagsSpaceInvLabel}',
+        f'lea {rsi}, [{rdi} + {alChunkLabel}_size + {rdx}]',
+        f'mov qword [{rsi} + {alChunkLabel}.prev_size], {rdx}',
+        f'mov {rax}, [{rsi} + {alChunkLabel}.size]',
+        f'and {rax}, {flagPrevinuseInvLabel}',
+        f'mov qword [{rsi} + {alChunkLabel}.size], {rax}',
+        f'mov {rax}, [{rdi} + {alChunkLabel}.size]',
+        f'test {rax}, {flagPrevinuseLabel}',
+        'jnz .previnuse_set', # The prev chunk is free
+        f'mov {rax}, [{rdi} + {alChunkLabel}.prev_size]',
+        f'sub {rdi}, {rax}',
+        f'sub {rdi}, {alChunkLabel}_size',
+        f'cmp {rdi}, [rel {freeheadLabel}]',
+        'jne .not_head',
+        f'mov {rax}, [{rdi} + {frChunkLabel}.next]',
+        f'mov qword [rel {freeheadLabel}], {rax}',
+        '.not_head:',
+        f'mov {rax}, [{rdi} + {frChunkLabel}.size]',
+        f'and {rax}, {flagsSpaceInvLabel}',
+        f'add {rax}, {rdx}',
+        f'add {rax}, {alChunkLabel}_size',
+        f'call {ll_removefreech}',
+        f'lea {rsi}, [{rdi} + {frChunkLabel}.size]',
+        f'mov {rdx}, [{rsi}]',
+        f'and {rdx}, {flagsSpaceLabel}',
+        f'or {rdx}, {rax}',
+        f'mov qword [{rsi}], {rdx}',
+        f'call {freeLabel}',
+        'ret',
+        '.previnuse_set:', # prev chunk not free
+        f''
       ]
     },
     {
