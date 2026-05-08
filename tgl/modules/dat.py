@@ -287,18 +287,17 @@ def free(args: list[TypedArgument]) -> InstructionList:
 
   wrap = saveRegs([rax, rdi, rsi, rdx])
 
-  mallocLabel, isDefined = Global.getGlobalIdFor('malloc')
+  freeLabel, isDefined = Global.getGlobalIdFor('free')
 
-  if not isDefined: raise TGLNonexistentError('Called malloc without initializing the dat module!', '')
+  if not isDefined: raise TGLNonexistentError('Called free without initializing the dat module!', '')
 
   return [
     {
       'op': None,
       'content': [
         *wrap['before'],
-        f'mov {rax}, {args[0]["value"]}',
-        f'call {mallocLabel}',
-        f'mov rax, {rdi}',
+        f'mov {rdi}, {args[0]["value"]}',
+        f'call {freeLabel}',
         *wrap['after']
       ]
     }
