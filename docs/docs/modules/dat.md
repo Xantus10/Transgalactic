@@ -17,3 +17,27 @@ The `init` function **must** be called before any other functions in the `dat` m
 This function internally calls `mc mmap` to allocate memory pages according to the desired `SIZE`. The `SIZE` should therefore align with the page size. Default value is `4096`.
 
 **Important note**: The allocator is primitive. It **will not** allocate additional pages when it runs out of space. It is recommended to allocate more memory than you will use (Also the chunk metadata will take up a good portion of the page - `16 Bytes per chunk`)
+
+## `malloc`
+
+```
+malloc SIZE
+
+int SIZE - Size to alloc
+
+tags: regs[wr1, wr2, wr3, wr4], ret[rax]
+```
+
+Allocate a chunk of specified size and return the pointer in `rax`. The size will be rounded up to 0x10.
+
+## `free`
+
+```
+free REG
+
+register REG - Register holding the pointer to free
+
+tags: regs[wr1, wr2, wr3, wr4]
+```
+
+Free a pointer provided through a register.
