@@ -63,6 +63,10 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#init">init</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#malloc">malloc</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#free">free</a>
+    </li>
     </ul>
                   </li>
               </ul>
@@ -103,6 +107,22 @@ tags: syscall, regs[rax, rdi, rsi, rdx, r8, r9, r10], ret[rax]
 <p>The <code>init</code> function <strong>must</strong> be called before any other functions in the <code>dat</code> module.</p>
 <p>This function internally calls <code>mc mmap</code> to allocate memory pages according to the desired <code>SIZE</code>. The <code>SIZE</code> should therefore align with the page size. Default value is <code>4096</code>.</p>
 <p><strong>Important note</strong>: The allocator is primitive. It <strong>will not</strong> allocate additional pages when it runs out of space. It is recommended to allocate more memory than you will use (Also the chunk metadata will take up a good portion of the page - <code>16 Bytes per chunk</code>)</p>
+<h2 id="malloc"><code>malloc</code></h2>
+<pre><code>malloc SIZE
+
+int SIZE - Size to alloc
+
+tags: regs[wr1, wr2, wr3, wr4], ret[rax]
+</code></pre>
+<p>Allocate a chunk of specified size and return the pointer in <code>rax</code>. The size will be rounded up to 0x10.</p>
+<h2 id="free"><code>free</code></h2>
+<pre><code>free REG
+
+register REG - Register holding the pointer to free
+
+tags: regs[wr1, wr2, wr3, wr4]
+</code></pre>
+<p>Free a pointer provided through a register.</p>
               
             </div>
           </div><footer>
