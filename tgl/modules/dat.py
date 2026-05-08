@@ -213,7 +213,29 @@ def init(args: list[TypedArgument]) -> InstructionList:
         f'call {freeLabel}',
         'ret',
         '.previnuse_set:', # prev chunk not free
-        f''
+        f'mov {rdx}, [{rsi} + {alChunkLabel}.size]',
+        f'and {rdx}, {flagsSpaceInvLabel}',
+        f'test {rdx}, {rdx}',
+        'jz .end',
+        f'mov {rax}, [{rsi} + {alChunkLabel}.size]',
+        f'lea {rdx}, [{rsi} + {alChunkLabel}_size + {rax}]',
+        f'mov {rax}, [{rdx} + {alChunkLabel}.size]',
+        f'and {rax}, {flagPrevinuseLabel}',
+        f'test {rax}, {rax}',
+        'jz .end',
+        f'cmp {rsi}, [rel {freeheadLabel}]',
+        'jne .not_headn',
+        f'mov {rax}, [{rsi} + {frChunkLabel}.next]',
+        f'mov qword [rel {freeheadLabel}], {rax}',
+        '.not_headn:',
+        f'mov {rdi}, {rsi}',
+        f'call {ll_removefreech}',
+        f'call {freeLabel}',
+        'ret',
+        '.end:',
+        f'call {ll_addfreech}',
+        f'mov qword [rel {freeheadLabel}], {rdi}',
+        'ret'
       ]
     },
     {
