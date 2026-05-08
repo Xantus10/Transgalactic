@@ -1,7 +1,7 @@
 from ..errors import TGLArgumentError, TGLNonexistentError
 from ..globals import Global
 from ..parse import checkArgTypes, strparse, toNASMByteSequence
-from ..types import InstructionList, ModuleExport, TypedArgument, isArgString, isArgInt, filemode_convert, isFilemode
+from ..types import InstructionList, ModuleExport, TypedArgument, isArgString, isValueRegister, isArgInt, filemode_convert, isFilemode
 
 from .savestate import saveRegs, saveSyscallArgs, saveSyscallArgsExtended
 
@@ -246,7 +246,68 @@ def init(args: list[TypedArgument]) -> InstructionList:
     }
   ]
 
+
+def malloc(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'malloc', 'expected': 1, 'got': len(args)}, str(args))
+  if not isArgInt(args[0]): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'malloc', 'expected': ('int',), 'got': (args[0]['argtype'],)}, str(args))
+
+  rax = Global.regs['r1']['b64']
+  rdi = Global.regs['r2']['b64']
+  rsi = Global.regs['r3']['b64']
+  rdx = Global.regs['r4']['b64']
+
+  wrap = saveRegs([rax, rdi, rsi, rdx])
+
+  mallocLabel, isDefined = Global.getGlobalIdFor('malloc')
+
+  if not isDefined: raise TGLNonexistentError('Called malloc without initializing the dat module!', '')
+
+  return [
+    {
+      'op': None,
+      'content': [
+        *wrap['before'],
+        f'mov {rax}, {((args[0]["value"] + 0xf) // 0x10) * 0x10}', # round to 0x10
+        f'call {mallocLabel}',
+        f'mov rax, {rdi}',
+        *wrap['after']
+      ]
+    }
+  ]
+
+
+def free(args: list[TypedArgument]) -> InstructionList:
+  if len(args) != 1: raise TGLArgumentError.preset({'et': 'argcount', 'func_name': 'free', 'expected': 1, 'got': len(args)}, str(args))
+  if not isArgString(args[0]) or not isValueRegister(args[0]['value']): raise TGLArgumentError.preset({'et': 'argtypes', 'func_name': 'free', 'expected': ('register',), 'got': (args[0]['argtype'],)}, str(args))
+
+  rax = Global.regs['r1']['b64']
+  rdi = Global.regs['r2']['b64']
+  rsi = Global.regs['r3']['b64']
+  rdx = Global.regs['r4']['b64']
+
+  wrap = saveRegs([rax, rdi, rsi, rdx])
+
+  mallocLabel, isDefined = Global.getGlobalIdFor('malloc')
+
+  if not isDefined: raise TGLNonexistentError('Called malloc without initializing the dat module!', '')
+
+  return [
+    {
+      'op': None,
+      'content': [
+        *wrap['before'],
+        f'mov {rax}, {args[0]["value"]}',
+        f'call {mallocLabel}',
+        f'mov rax, {rdi}',
+        *wrap['after']
+      ]
+    }
+  ]
+
+
 # Export
 FUNCTIONS: ModuleExport = {
-  'init': init
+  'init': init,
+  'malloc': malloc,
+  'free': free
 }
